@@ -1,16 +1,20 @@
 {
   "name": "webtv-sidebar-project",
   "version": "1.0.0",
-  "description": "A web TV project with a sidebar for channel selection",
+  "description": "A project for building a web TV with sidebar",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
-  "dependencies": {
-    "express": "^4.17.2",
-    "hls.js": "^1.0.0"
-  },
-  "devDependencies": {},
+  "keywords": [
+    "webtv",
+    "sidebar",
+    "hls.js"
+  ],
   "author": "Your Name",
-  "license": "ISC"
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",  // Hier könnte eine Serverbibliothek wie Express hinzugefügt werden, wenn das Projekt einen Server verwendet
+  "hls.js": "^latest"
+  }
 }
