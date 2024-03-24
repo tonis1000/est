@@ -14,7 +14,7 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",  // Hier könnte eine Serverbibliothek wie Express hinzugefügt werden, wenn das Projekt einen Server verwendet
+    "express": "^4.17.1",
   "hls.js": "^latest"
   }
 }
