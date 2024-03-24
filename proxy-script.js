@@ -13,6 +13,9 @@ http.createServer((req, res) => {
   };
 
   const proxyReq = (parsedUrl.protocol === 'https:' ? https : http).request(options, (proxyRes) => {
+    // Setze die CORS-Header im Response-Objekt
+    res.setHeader('Access-Control-Allow-Origin', '*'); // Erlaubt Zugriff von allen Ursprüngen
+
     res.writeHead(proxyRes.statusCode, proxyRes.headers);
     proxyRes.pipe(res, { end: true });
   });
@@ -27,3 +30,4 @@ http.createServer((req, res) => {
 }).listen(8080, () => {
   console.log('Proxy server running on port 8080');
 });
+
