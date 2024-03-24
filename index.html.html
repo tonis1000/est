@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTV mit Sidebar</title>
+    
+    <!-- Fügen Sie die hls.js-Bibliothek hinzu -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <!-- Content-Security-Policy Header einfügen -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    
+    <style>
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        #sidebar {
+            width: 230px;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px; /* Hier habe ich die linke und rechte Innenpolsterung auf 20px erhöht */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            margin-right: 40px;
+    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
+    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
+}
+        #channelList {
+            list-style: none;
+            padding: 0 30px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
+            margin: 0;
+        }
+
+        #channelList li {
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+                #channelList li img {
+            width: 24px; /* Größe des Logos anpassen */
+            height: 24px;
+            margin-right: 8px; /* Abstand zwischen Logo und Text */
+        }
+
+        #currentChannel {
+            background-color: #222;
+            padding: 10px;
+            color: white;
+            margin-bottom: 20px;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+
+        #currentChannelName {
+            margin-right: 10px;
+        }
+
+        #currentChannel input {
+            width: 70%;
+            padding: 5px;
+            font-size: 14px;
+            text-align: center;
+            margin-right: 10px;
+        }
+
+        #playButton {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            font-size: 20px;
+            border-radius: 50%;
+        }
+
+        #mainContent {
+            flex-grow: 1;
+            padding: 10px;
+        }
+
+        #additionalContent {
+            margin-left: 10px; /* Änderung der Margin, da die vorherige redundant war */
+        }
+
+        #additionalContent iframe {
+            width: 100%;
+            height: 800px;
+        }
+
+        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+        .online {
+            color: #2EFE64;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="sidebar">
+    <h2 style="margin-bottom: 10px;">Kanäle</h2>
+    <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
+    <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
+    <ul id="channelList">
+<li data-url="https://88.99.254.101/ert1/mono.m3u8">ERT1</li>
+<li data-url="https://88.99.254.101/ert2/mono.m3u8" tvg-id="ERT2.gr" tvg-logo="https://i.imgur.com/nMHKG3A.png">ERT2</li>
+        
+<li data-url="https://88.99.254.101/ert3/mono.m3u8" tvg-id="ERT3.gr" tvg-logo="https://i.imgur.com/f2l9bDR.png">ERT3</li>
+<li data-url="https://telmacosa.s.llnwi.net/osO/ERTNews/default/ERTNews-audio_104621_und=104400-video=5000000.m3u8" tvg-id="ERTNews.gr" tvg-logo="https://upload.wikimedia.org/wikipedia/el/thumb/9/91/ErtNews-Logo.png/512px-ErtNews-Logo.png">ERT News</li>
+        
+<li data-url="https://telmacosa.s.llnwi.net/ertlive/ertsports1/default/index.m3u8" tvg-id="ERT SPORTS 1" tvg-logo="https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/%CE%A4%CE%BF_%CE%BB%CE%BF%CE%B3%CF%8C%CF%84%CF%85%CF%80%CE%BF_%CF%84%CE%B7%CF%82_%CE%95%CE%A1%CE%A4_Sports_1.png/180px-%CE%A4%CE%BF_%CE%BB%CE%BF%CE%B3%CF%8C%CF%84%CF%85%CF%80%CE%BF_%CF%84%CE%B7%CF%82_%CE%95%CE%A1%CE%A4_Sports_1.png">ERT SPORTS 1</li>
+
+<li data-url="https://telmacosa.s.llnwi.net/osY/ERT2/default/playlist.m3u8" tvg-id="ERT SPORTS 2" tvg-logo="https://upload.wikimedia.org/wikipedia/el/thumb/a/a5/Ertsports2.png/800px-Ertsports2.png">ERT SPORTS 2</li>
+<li data-url="https://cdn1.smart-tv-data.com/vid/ertplay2/playlist.m3u8" tvg-id="ERT SPORTS 2" tvg-logo="https://upload.wikimedia.org/wikipedia/el/thumb/a/a5/Ertsports2.png/800px-Ertsports2.png">ERT SPORTS 2</li>
+
+<li data-url="https://telmacosa.s.llnwi.net/osY/ERT3/default/playlist.m3u8" tvg-id="ERT SPORTS 3" tvg-logo="https://upload.wikimedia.org/wikipedia/el/d/db/Ertsports3.png">ERT SPORTS 3</li>
+<li data-url="https://cdn1.smart-tv-data.com/vid/ertplay3/playlist.m3u8" tvg-id="ERT SPORTS 3" tvg-logo="https://upload.wikimedia.org/wikipedia/el/d/db/Ertsports3.png">ERT SPORTS 3</li> 
+        
+<li data-url="https://d1nfykbwa3n98t.cloudfront.net/out/v1/6e5667da5a6843899a337dea72adb61b/antenna.m3u8" tvg-id="Ant1.gr" tvg-logo="https://i.imgur.com/g0jPOcC.png">Ant1</li>
+        
+<li data-url="https://alphatvlive.siliconweb.com/1/Y2Rsd1lUcUVoajcv/UVdCN25h/hls/live/playlist.m3u8" tvg-id="AlphaTV.gr" tvg-logo="https://i.imgur.com/6twzd38.png">AlphaTV</li>
+        
+<li data-url="http://skai-live.siliconweb.com/media/cambria4/index.m3u8" tvg-id="SkaiTV.gr" tvg-logo="https://i.imgur.com/mrKRFnf.png">Skai</li>
+<li data-url="https://skai-live-back.siliconweb.com/media/cambria4/index.m3u8" tvg-id="SkaiTV.gr" tvg-logo="https://i.imgur.com/mrKRFnf.png">Skai</li>
+        
+<li data-url="https://liveopencloud.siliconweb.com/1/ZlRza2R6L2tFRnFJ/eWVLSlQx/hls/live/playlist.m3u8" tvg-id="OpenTV.gr" tvg-logo="https://i.imgur.com/M6XG03v.png">Open TV</li>
+<li data-url="https://opentvlive1.siliconweb.com/opentvliveabr/openlatin/opentvlive/openlatin/chunks.m3u8" tvg-id="OpenSport1.gr" tvg-logo="INSERT_LOGO_URL_HERE">Open Sport1</li>
+<li data-url="https://opentvlive1.siliconweb.com/opentvliveabr/openlatin2/opentvlive/openlatin2/chunks.m3u8" tvg-id="OpenSport2.gr" tvg-logo="INSERT_LOGO_URL_HERE">Open Sport2</li>
+        
+<li data-url="http://streamcdnb7-c98db5952cb54b358365984178fb898a.msvdn.net/live/S86713049/gonOwuUacAxM/playlist.m3u8" tvg-id="MEGATV.gr" tvg-logo="https://i.imgur.com/UsyFADE.png">MEGA TV</li>
+<li data-url="https://cdn1.smart-tv-data.com/mega/mega/playlist.m3u8" tvg-id="MEGATV.gr" tvg-logo="https://i.imgur.com/UsyFADE.png">MEGA TV</li>        
+<li data-url="https://streamcdnh3-c98db5952cb54b358365984178fb898a.msvdn.net/live/S86713049/gonOwuUacAxM/chunklist_b3710976.m3u8" tvg-id="MEGATV.gr" tvg-logo="https://i.imgur.com/UsyFADE.png">MEGA TV</li>
+<li data-url="https://c98db5952cb54b358365984178fb898a.msvdn.net/live/S86713049/gonOwuUacAxM/playlist.m3u8" tvg-id="MEGATV.gr" tvg-logo="https://i.imgur.com/UsyFADE.png">MEGA TV</li>
+        
+<li data-url="https://s2.cystream.net/galanos/open/chunks.m3u8?nimblesessionid=792681&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjEvMjAyMyA3OjA3OjI2IFBNJmhhc2hfdmFsdWU9R2JkcnhiZ1NudUZkbnRrZEdobTdiUT09JnZhbGlkbWludXRlcz0yMA==" tvg-id="MEGATV1.gr" tvg-logo="INSERT_LOGO_URL_HERE">MEGA TV1</li>
+<li data-url="https://livestar.siliconweb.com/media/star1/star1mediumhd.m3u8" tvg-id="StarChannel.gr" tvg-logo="https://i.imgur.com/6NUpxhr.png">Star TV</li>
+<li data-url="https://livestar.siliconweb.com/media/star1/star1.m3u8" tvg-id="StarChannel.gr" tvg-logo="https://i.imgur.com/6NUpxhr.png">Star TV1</li>
+<li data-url="https://s2.cystream.net/galanos/star/chunks.m3u8?nimblesessionid=783489&wmsAuthSign=c2VydmVyX3RpbWU9MTEvMjAvMjAyMyAxMDoyNTozOCBQTSZoYXNoX3ZhbHVlPWNrMUg2TjRVWlZGR0t4V1k2QXVhWFE9PSZ2YWxpZG1pbnV0ZXM9MjA=" tvg-id="StarChannel.gr" tvg-logo="INSERT_LOGO_URL_HERE">Star TV2</li>
+<li data-url="http://actionlive.siliconweb.com/actionabr/actiontv/playlist.m3u8" tvg-id="Action24.gr" tvg-logo="https://i.imgur.com/Fsnz8GK.png">Action 24</li>
+<li data-url="https://kontralive.siliconweb.com/live/kontratv/playlist.m3u8" tvg-id="KontraChannel.gr" tvg-logo="https://i.imgur.com/ZqEovqx.png">Kontra</li>
+<li data-url="https://live.fm100.gr/hls/tv100/1_2/index.m3u8" tvg-id="TV100.gr" tvg-logo="https://i.imgur.com/fh6ZaGP.png">TV 100</li>
+        
+<li data-url="https://web.onair-radio.eu/groovytv/groovytv/chunklist_w2146395179.m3u8" tvg-id="GroovyTV.gr" tvg-logo="https://i.imgur.com/5kAPGz5.png">Groovy TV</li>
+        
+<li data-url="https://live.netmaxtv.com:8081/live/live/chunklist_w1335266248.m3u8" tvg-id="NetMaxTV.gr" tvg-logo="https://i.imgur.com/ZHfGJyD.png">NetMaxTV</li>
+<li data-url="https://dlm34ll53zqql.cloudfront.net/out/v1/d4177931deff4c7ba994b8126d153d9f/maktv.m3u8" tvg-id="MakTV.gr" tvg-logo="https://i.imgur.com/Vd4tPqE.png">Mak TV</li>
+<li data-url="https://s1.cystream.net/live/34100/playlist.m3u8" tvg-id="CinemaTime.gr" tvg-logo="https://i.imgur.com/vZLFUk7.png">Cinema Time</li>
+            
+<li data-url="https://websuit.onlinehdhls.ru/est1/cdn/mono60/playlist.m3u8" tvg-id="Cosmote Sport 1" tvg-logo="https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/greece/cosmote-sport-1-gr.png">Cosmote Sport 1</li>
+<li data-url="https://websuit.onlinehdhls.ru/est1/cdn/mono65/tracks-v1a1/mono.m3u8" tvg-id="Cosmote Sport 5" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Cosmote Sport 5</li>            
+
+
+            
+<li data-url="https://danos.xtiposini.online/rohalia/familia/index.m3u8" tvg-id="Κανάλι 1" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Κανάλι 1</li>
+
+<li data-url="https://koulis.kaklapelomas.site:443/familia2/tracks-v1a1/mono.m3u8" tvg-id="Κανάλι 2" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Κανάλι 2</li>
+
+<li data-url="https://danos.xtiposini.online/rohalia/familia3/index.m3u8" tvg-id="Κανάλι 3" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Κανάλι 3</li>
+
+<li data-url="https://koulis.kaklapelomas.site:443/familia4/index.m3u8" tvg-id="Κανάλι 4" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Κανάλι 4</li>
+
+<li data-url="https://koulis.kaklapelomas.site:443/familia5/index.m3u8" tvg-id="Κανάλι 5" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Κανάλι 5</li>
+
+<li data-url="https://danos.xtiposini.online/rohalia/familia6/index.m3u8" tvg-id="Κανάλι 6" tvg-logo="https://assets.stickpng.com/images/594191c45eb5d45f10e35b29.png">Κανάλι 6</li>
+
+<li data-url="https://d3r0hoxz2ohm3t.cloudfront.net/out/v1/ff10c34afc0d4a038d0474e51f637649/f1.m3u8" tvg-id="Ant1+ F1" tvg-logo="https://antenna-group.com/wp-content/uploads/2023/04/ANT1_Plus_820x492.jpg">Ant1+ F1</li>
+
+
+
+<li data-url="https://d3qg0hadt0dkov.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-3sfgyrfz9zduo-prod/amgtennisus/playlist.m3u8" tvg-id="TENNIS 2" tvg-logo="https://i.imgur.com/8fedub5.png">TENNIS 2</li>
+
+<li data-url="https://tennischannel-intl-samsung-uk.amagi.tv/playlist.m3u8" tvg-id="TENNIS 3" tvg-logo="https://i.imgur.com/8fedub5.png">TENNIS 3</li>
+    </ul>
+</div>
+
+<div id="mainContent">
+    <div id="currentChannel">
+        <span id="currentChannelName">-</span>
+        <input type="text" id="currentChannelLink" />
+        <button id="playButton">▶</button>
+    </div>
+    <video id="my-video" controls preload="auto" width="1400" height="900"></video>
+</div>
+
+<div id="additionalContent">
+    <h2>Zusätzlicher Inhalt</h2>
+    <iframe src="https://foothubhd.xyz/" width="100%" height="500px" frameborder="0"></iframe>
+    <script src="proxy-script.js"></script>
+</div>
+
+<script>
+    function reloadPage() {
+        location.reload();
+    }
+
+    // Definition der playChannel-Funktion
+    window.playChannel = function(url, channelName) {
+        var videoElement = document.getElementById('my-video');
+        var currentChannelNameElement = document.getElementById('currentChannelName');
+        var currentChannelLinkElement = document.getElementById('currentChannelLink');
+        var hls = new Hls();
+
+        currentChannelNameElement.textContent = channelName;
+        currentChannelLinkElement.value = url;
+
+        if (Hls.isSupported()) {
+            hls.loadSource(url);
+            hls.attachMedia(videoElement);
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            videoElement.src = url;
+        }
+
+        videoElement.play(); // Direkt abspielen
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var videoElement = document.getElementById('my-video');
+        var currentChannelNameElement = document.getElementById('currentChannelName');
+        var currentChannelLinkElement = document.getElementById('currentChannelLink');
+        var playButton = document.getElementById('playButton');
+        var channelList = document.getElementById('channelList');
+        var hls = new Hls();
+
+        function playChannel(url, channelName) {
+            currentChannelNameElement.textContent = channelName;
+            currentChannelLinkElement.value = url;
+
+            if (Hls.isSupported()) {
+                hls.loadSource(url);
+                hls.attachMedia(videoElement);
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = url;
+            }
+
+            videoElement.play(); // Direkt abspielen
+        }
+
+        function addClickListeners() {
+            var channelListItems = document.querySelectorAll('#channelList li');
+            channelListItems.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    var channelUrl = this.getAttribute('data-url');
+                    var channelName = this.textContent;
+                    playChannel(channelUrl, channelName); // Hier wird die playChannel-Funktion mit den entsprechenden Parametern aufgerufen
+                });
+            });
+        }
+
+        function checkChannelOnline(url, element) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        element.classList.add('online');
+                    } else {
+                        element.classList.remove('online');
+                    }
+                }
+            };
+            xhr.open('HEAD', url, true);
+            xhr.send();
+        }
+
+        function checkOnlineStatus() {
+            var channelListItems = document.querySelectorAll('#channelList li');
+            channelListItems.forEach(function (item) {
+                var channelUrl = item.getAttribute('data-url');
+                checkChannelOnline(channelUrl, item);
+            });
+        }
+
+        playButton.addEventListener('click', function () {
+            var enteredUrl = currentChannelLinkElement.value.trim();
+            if (enteredUrl !== '') {
+                playChannel(enteredUrl, 'Custom Channel');
+            }
+        });
+
+        currentChannelLinkElement.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                var enteredUrl = currentChannelLinkElement.value.trim();
+                if (enteredUrl !== '') {
+                    playChannel(enteredUrl, 'Custom Channel');
+                }
+            }
+        });
+
+        // Hinzufügen des Event-Listeners für den "Kanalliste" Button
+        document.getElementById('channelListButton').addEventListener('click', function () {
+            loadChannels();
+        });
+
+        // Hier fügen wir den Kanälen in der Kanalliste1 einen Klick-Listener hinzu
+        document.getElementById('channelListButton1').addEventListener('click', function () {
+            loadChannels1();
+        });
+
+        addClickListeners();
+        checkOnlineStatus();
+    });
+
+    function loadChannels() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var channelList = document.getElementById('channelList');
+                channelList.innerHTML = ''; // Vorhandene Liste löschen
+                // Innerhalb der loadChannels() Funktion
+// Innerhalb der loadChannels() Funktion
+data.forEach(function (channel) {
+    var li = document.createElement('li');
+    li.textContent = channel.name;
+    li.setAttribute('data-url', channel.url);
+    
+    if (channel['tvg-logo']) {
+        var img = document.createElement('img');
+        img.src = channel['tvg-logo'];
+        img.alt = channel.name + ' Logo';
+        li.appendChild(img);
+    }
+    
+    channelList.appendChild(li);
+});
+
+                addClickListeners(); // Event-Listener hinzufügen
+                checkOnlineStatus(); // Online-Status überprüfen
+            }
+        };
+        xhr.open('GET', 'channels.json', true);
+        xhr.send();
+    }
+function loadChannels1() {
+    const playlistURL = 'https://raw.githubusercontent.com/PrantsOP/GreekIptvChannels/main/playlistGR.m3u';
+
+    fetch(playlistURL)
+        .then(response => response.text())
+        .then(data => {
+            const lines = data.split('\n');
+            const channelList = document.getElementById('channelList');
+            channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
+            lines.forEach(line => {
+                if (line.startsWith('#EXTINF:')) {
+                    const [, title] = line.split(',');
+                    const channelName = title.split('(')[0].trim();
+                    const channelURL = lines[lines.indexOf(line) + 1].trim();
+                    const channelItem = document.createElement('li');
+                    channelItem.textContent = channelName;
+                    channelItem.setAttribute('data-url', channelURL);
+                    channelItem.addEventListener('click', function () {
+                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
+                    });
+                    channelList.appendChild(channelItem);
+
+                    // Überprüfen und Markieren des Online-Status
+                    checkChannelOnline(channelURL, channelItem);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Fehler beim Laden der Kanäle:', error);
+        });
+}
+
+// Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
+function checkChannelOnline(url, element) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                element.classList.add('online'); // Fügen Sie die Klasse 'online' hinzu, wenn der Kanal online ist
+            }
+        }
+    };
+    xhr.open('HEAD', url, true);
+    xhr.send();
+}
+
+
+
+    // Aktualisiere die Online-Status-Funktion alle 1 Minute
+    setInterval(checkOnlineStatus, 60000); // 60000 Millisekunden entsprechen 1 Minute
+</script>
+
+</body>
+</html> 
