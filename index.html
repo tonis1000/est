@@ -30,25 +30,27 @@
     overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
     max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
 }
+
         #channelList {
             list-style: none;
-            padding: 0 30px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
+            padding: 0;
             margin: 0;
         }
 
         #channelList li {
+            display: flex;
+            align-items: center;
             margin-bottom: 8px;
             cursor: pointer;
             font-size: 18px;
             font-weight: bold;
         }
 
-                #channelList li img {
-            width: 24px; /* Größe des Logos anpassen */
+        #channelList li img {
+            width: 24px;
             height: 24px;
-            margin-right: 8px; /* Abstand zwischen Logo und Text */
+            margin-right: 8px;
         }
-
         #currentChannel {
             background-color: #222;
             padding: 10px;
