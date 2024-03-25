@@ -27,30 +27,40 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             flex-direction: column;
             margin-right: 40px;
-    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
-    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
-}
+            overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
+            max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
+            /* Stellen Sie sicher, dass die Z-Ebene niedriger ist als die der Bilder */
+            z-index: 0;
+        }
+        #channelListContainer {
+            background-color: #333;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1; /* Setzen Sie die Z-Ebene des Containers */
+        }
 
         #channelList {
             list-style: none;
-            padding: 0;
+            padding: 0 40px;
             margin: 0;
         }
 
         #channelList li {
-            display: flex;
-            align-items: center;
+            background-color: #fff; /* Weiß als Hintergrundfarbe */
             margin-bottom: 8px;
             cursor: pointer;
             font-size: 18px;
             font-weight: bold;
+            display: flex;
+            align-items: center; /* Zentriert das Logo und den Sendername vertikal */
         }
 
         #channelList li img {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
+            width: 50px; /* Anpassen der Breite des Logos */
+            height: auto; /* Automatische Anpassung der Höhe */
+            margin-right: 10px; /* Abstand zwischen dem Logo und dem Sendername */
         }
+
         #currentChannel {
             background-color: #222;
             padding: 10px;
@@ -61,11 +71,11 @@
             align-items: center;
             position: fixed;
             top: 0;
-            width: 70%;
+            width: 60%;
         }
 
         #currentChannelName {
-            margin-right: 10px;
+            margin-left: 10px; /* Abstand zwischen dem Logo und dem Sendername */
         }
 
         #currentChannel input {
@@ -111,6 +121,7 @@
 <body>
 
 <div id="sidebar">
+    <div id="channelListContainer">
     <h2 style="margin-bottom: 10px;">Kanäle</h2>
     <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
     <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
@@ -184,7 +195,9 @@
 
 <li data-url="https://tennischannel-intl-samsung-uk.amagi.tv/playlist.m3u8" tvg-id="TENNIS 3" tvg-logo="https://i.imgur.com/8fedub5.png">TENNIS 3</li>
     </ul>
-</div>
+</div>  
+    </div>  
+        
 
 <div id="mainContent">
     <div id="currentChannel">
