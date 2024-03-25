@@ -1,3 +1,4 @@
+User
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,37 +28,22 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             flex-direction: column;
             margin-right: 40px;
-            overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
-            max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
-            /* Stellen Sie sicher, dass die Z-Ebene niedriger ist als die der Bilder */
-            z-index: 0;
-        }
-        #channelListContainer {
-            background-color: #333;
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 1; /* Setzen Sie die Z-Ebene des Containers */
-        }
-
+    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
+    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
+}
         #channelList {
             list-style: none;
-            padding: 0 40px;
+            padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
             margin: 0;
         }
 
         #channelList li {
-            background-color: #fff; /* Weiß als Hintergrundfarbe */
             margin-bottom: 8px;
             cursor: pointer;
             font-size: 18px;
             font-weight: bold;
         }
 
-        #channelList li img {
-            width: 100px;
-            height: 50px;
-            margin-right: 8px;
-        }
         #currentChannel {
             background-color: #222;
             padding: 10px;
@@ -68,7 +54,7 @@
             align-items: center;
             position: fixed;
             top: 0;
-            width: 60%;
+            width: 100%;
         }
 
         #currentChannelName {
@@ -118,7 +104,6 @@
 <body>
 
 <div id="sidebar">
-    <div id="channelListContainer">
     <h2 style="margin-bottom: 10px;">Kanäle</h2>
     <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
     <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
@@ -192,8 +177,7 @@
 
 <li data-url="https://tennischannel-intl-samsung-uk.amagi.tv/playlist.m3u8" tvg-id="TENNIS 3" tvg-logo="https://i.imgur.com/8fedub5.png">TENNIS 3</li>
     </ul>
- </div>
-</div>    
+</div>
 
 <div id="mainContent">
     <div id="currentChannel">
@@ -329,23 +313,12 @@
                 var data = JSON.parse(xhr.responseText);
                 var channelList = document.getElementById('channelList');
                 channelList.innerHTML = ''; // Vorhandene Liste löschen
-                // Innerhalb der loadChannels() Funktion
-// Innerhalb der loadChannels() Funktion
-data.forEach(function (channel) {
-    var li = document.createElement('li');
-    li.textContent = channel.name;
-    li.setAttribute('data-url', channel.url);
-    
-    if (channel['tvg-logo']) {
-        var img = document.createElement('img');
-        img.src = channel['tvg-logo'];
-        img.alt = channel.name + ' Logo';
-        li.appendChild(img);
-    }
-    
-    channelList.appendChild(li);
-});
-
+                data.forEach(function (channel) {
+                    var li = document.createElement('li');
+                    li.textContent = channel.name;
+                    li.setAttribute('data-url', channel.url);
+                    channelList.appendChild(li);
+                });
                 addClickListeners(); // Event-Listener hinzufügen
                 checkOnlineStatus(); // Online-Status überprüfen
             }
@@ -406,4 +379,4 @@ function checkChannelOnline(url, element) {
 </script>
 
 </body>
-</html>
+</html> 
