@@ -1,4 +1,3 @@
-User
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +9,7 @@ User
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
     <meta http-equiv="Access-Control-Allow-Origin" content="*" />
-    
+
     <style>
         body {
             display: flex;
@@ -18,21 +17,21 @@ User
             font-family: Arial, sans-serif;
         }
 
-#sidebar {
-    width: 230px;
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    overflow-y: auto;
-}
+        #sidebar {
+            width: 230px;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            overflow-y: auto;
+        }
 
         #channelList {
             list-style: none;
-            padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
+            padding: 0 10px;
             margin: 0;
         }
 
@@ -79,26 +78,27 @@ User
             border-radius: 50%;
         }
 
-#mainContent {
-    margin-left: 250px; /* Breite der Sidebar plus 20px Abstand */
-    padding: 10px;
-}
-#my-video {
-    width: 100%; /* Breite des Videoplayers 100% */
-    height: calc(100vh - 20px); /* Höhe des Videoplayers so, dass er den verbleibenden Bildschirm ausfüllt, nachdem die Kopfzeile subtrahiert wurde */
-}
-
-#additionalContent {
-    margin-left: 250px; /* Breite der Sidebar plus 20px Abstand */
-    padding: 10px;
-}
-
-        #additionalContent iframe {
-            width: 440px;
-            height: 800px;
+        #mainContent {
+            margin-left: 250px;
+            padding: 10px;
         }
 
-        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+        #my-video {
+            width: 100%;
+            height: calc(100vh - 20px);
+        }
+
+        #additionalContent {
+            margin-left: 250px;
+            padding: 10px;
+        }
+
+        #additionalContent iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+        }
+
         .online {
             color: #2EFE64;
         }
@@ -186,19 +186,16 @@ User
 <div id="mainContent">
     <div id="currentChannel">
         <span id="currentChannelName">-</span>
-        <input type="text" id="currentChannelLink" />
+        <input type="text" id="currentChannelLink" placeholder="Kanal-URL eingeben"/>
         <button id="playButton">▶</button>
     </div>
     
-    <video id="my-video" controls preload="auto" width="1400" height="900" src="http://example.com/stream.m3u8"></video>
-
+    <video id="my-video" controls preload="auto"></video>
 </div>
 
 <div id="additionalContent">
     <h2>Zusätzlicher Inhalt</h2>
-    <iframe src="https://foothubhd.xyz/" width="100%" height="500px" frameborder="0"></iframe>
-    <script src="proxy-script.js"></script>
-
+    <iframe src="https://foothubhd.xyz/" frameborder="0"></iframe>
 </div>
 
 <script>
@@ -206,222 +203,107 @@ User
         location.reload();
     }
 
-    // Definition der playChannel-Funktion
-    window.playChannel = function(url, channelName) {
-        var videoElement = document.getElementById('my-video');
-        var currentChannelNameElement = document.getElementById('currentChannelName');
-        var currentChannelLinkElement = document.getElementById('currentChannelLink');
-        var hls = new Hls();
+    let hlsInstance;
+
+    function playChannel(url, channelName) {
+        const videoElement = document.getElementById('my-video');
+        const currentChannelNameElement = document.getElementById('currentChannelName');
+        const currentChannelLinkElement = document.getElementById('currentChannelLink');
 
         currentChannelNameElement.textContent = channelName;
         currentChannelLinkElement.value = url;
 
-        if (Hls.isSupported()) {
-            hls.loadSource(url);
-            hls.attachMedia(videoElement);
+        if (hls.isSupported()) {
+            if (hlsInstance) {
+                hlsInstance.destroy();
+            }
+            hlsInstance = new Hls();
+            hlsInstance.loadSource(url);
+            hlsInstance.attachMedia(videoElement);
+            videoElement.play();
         } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
             videoElement.src = url;
+            videoElement.play();
         }
-
-        videoElement.play(); // Direkt abspielen
-    };
+    }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var videoElement = document.getElementById('my-video');
-        var currentChannelNameElement = document.getElementById('currentChannelName');
-        var currentChannelLinkElement = document.getElementById('currentChannelLink');
-        var playButton = document.getElementById('playButton');
-        var channelList = document.getElementById('channelList');
-        var hls = new Hls();
-
-        function playChannel(url, channelName) {
-            currentChannelNameElement.textContent = channelName;
-            currentChannelLinkElement.value = url;
-
-            if (Hls.isSupported()) {
-                hls.loadSource(url);
-                hls.attachMedia(videoElement);
-            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = url;
-            }
-
-            videoElement.play(); // Direkt abspielen
-        }
-
-        function addClickListeners() {
-            var channelListItems = document.querySelectorAll('#channelList li');
-            channelListItems.forEach(function (item) {
-                item.addEventListener('click', function () {
-                    var channelUrl = this.getAttribute('data-url');
-                    var channelName = this.textContent;
-                    playChannel(channelUrl, channelName); // Hier wird die playChannel-Funktion mit den entsprechenden Parametern aufgerufen
-                });
-            });
-        }
-
-        function checkChannelOnline(url, element) {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        element.classList.add('online');
-                    } else {
-                        element.classList.remove('online');
-                    }
-                }
-            };
-            xhr.open('HEAD', url, true);
-            xhr.send();
-        }
-
-        function checkOnlineStatus() {
-            var channelListItems = document.querySelectorAll('#channelList li');
-            channelListItems.forEach(function (item) {
-                var channelUrl = item.getAttribute('data-url');
-                checkChannelOnline(channelUrl, item);
-            });
-        }
+        const playButton = document.getElementById('playButton');
+        const currentChannelLinkElement = document.getElementById('currentChannelLink');
 
         playButton.addEventListener('click', function () {
-            var enteredUrl = currentChannelLinkElement.value.trim();
+            const enteredUrl = currentChannelLinkElement.value.trim();
             if (enteredUrl !== '') {
-                playChannel(enteredUrl, 'Custom Channel');
+                playChannel(enteredUrl, 'Benutzerdefinierter Kanal');
             }
         });
 
         currentChannelLinkElement.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
-                var enteredUrl = currentChannelLinkElement.value.trim();
+                const enteredUrl = currentChannelLinkElement.value.trim();
                 if (enteredUrl !== '') {
-                    playChannel(enteredUrl, 'Custom Channel');
+                    playChannel(enteredUrl, 'Benutzerdefinierter Kanal');
                 }
             }
         });
-
-        // Hinzufügen des Event-Listeners für den "Kanalliste" Button
-        document.getElementById('channelListButton').addEventListener('click', function () {
-            loadChannels();
-        });
-
-        // Hier fügen wir den Kanälen in der Kanalliste1 einen Klick-Listener hinzu
-        document.getElementById('channelListButton1').addEventListener('click', function () {
-            loadChannels1();
-        });
-
-        addClickListeners();
-        checkOnlineStatus();
     });
 
-    function loadChannels() {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                var channelList = document.getElementById('channelList');
-                channelList.innerHTML = ''; // Vorhandene Liste löschen
-                data.forEach(function (channel) {
-                    var li = document.createElement('li');
-                    li.textContent = channel.name;
-                    li.setAttribute('data-url', channel.url);
-                    channelList.appendChild(li);
+    function loadChannels1() {
+        const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
+
+        fetch(playlistURL)
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split('\n');
+                const channelList = document.getElementById('channelList');
+                channelList.innerHTML = '';
+                let channelName = '';
+                lines.forEach(line => {
+                    if (line.startsWith('#EXTINF:')) {
+                        const [, properties] = line.split(' ');
+                        const titleIndex = properties.indexOf('group-title="');
+                        if (titleIndex !== -1) {
+                            const endQuoteIndex = properties.indexOf('"', titleIndex + 13);
+                            if (endQuoteIndex !== -1) {
+                                channelName = properties.substring(titleIndex + 13, endQuoteIndex);
+                            }
+                        } else {
+                            const [, title] = line.split(',');
+                            channelName = title.split('(')[0].trim();
+                        }
+                    } else if (line.startsWith('http')) {
+                        const channelURL = line.trim();
+                        const channelItem = document.createElement('li');
+                        if (channelName !== '') {
+                            channelItem.textContent = channelName;
+                            channelItem.setAttribute('data-url', channelURL);
+                            channelItem.addEventListener('click', function () {
+                                playChannel(channelURL, channelName);
+                            });
+                            channelList.appendChild(channelItem);
+                            checkChannelOnline(channelURL, channelItem);
+                        }
+                    }
                 });
-                addClickListeners(); // Event-Listener hinzufügen
-                checkOnlineStatus(); // Online-Status überprüfen
-            }
-        };
-        xhr.open('GET', 'channels.json', true);
-        xhr.send();
+            })
+            .catch(error => {
+                console.error('Fehler beim Laden der Kanäle:', error);
+            });
     }
 
-
-
-
-
-
-
-
-function loadChannels1() {
-    const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
-
-    fetch(playlistURL)
-        .then(response => response.text())
-        .then(data => {
-            const lines = data.split('\n');
-            const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-            let channelName = '';
-            lines.forEach(line => {
-                if (line.startsWith('#EXTINF:')) {
-                    const [, properties] = line.split(' ');
-                    const titleIndex = properties.indexOf('group-title="');
-                    if (titleIndex !== -1) {
-                        const endQuoteIndex = properties.indexOf('"', titleIndex + 13);
-                        if (endQuoteIndex !== -1) {
-                            channelName = properties.substring(titleIndex + 13, endQuoteIndex);
-                        }
-                    } else {
-                        const [, title] = line.split(',');
-                        channelName = title.split('(')[0].trim();
-                    }
-                } else if (line.startsWith('http')) {
-                    const channelURL = line.trim();
-                    const channelItem = document.createElement('li');
-                    if (channelName !== '') { // Sicherstellen, dass der Kanalname nicht leer ist
-                        channelItem.textContent = channelName;
-                        channelItem.setAttribute('data-url', channelURL);
-                        channelItem.addEventListener('click', function () {
-                            playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
-                        });
-                        channelList.appendChild(channelItem);
-
-                        // Überprüfen und Markieren des Online-Status
-                        checkChannelOnline(channelURL, channelItem);
-                    }
+    function checkChannelOnline(url, element) {
+        fetch(url, { method: 'HEAD' })
+            .then(response => {
+                if (response.ok) {
+                    element.classList.add('online');
                 }
+            })
+            .catch(error => {
+                console.error('Fehler beim Überprüfen des Online-Status:', error);
             });
-        })
-        .catch(error => {
-            console.error('Fehler beim Laden der Kanäle:', error);
-        });
-}
-
-
-
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-// Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
-function checkChannelOnline(url, element) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                element.classList.add('online'); // Fügen Sie die Klasse 'online' hinzu, wenn der Kanal online ist
-            }
-        }
-    };
-    xhr.open('HEAD', url, true);
-    xhr.send();
-}
-
-
-
-    // Aktualisiere die Online-Status-Funktion alle 1 Minute
-    setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 1/2 Minute
+    }
 </script>
 
 </body>
-</html> 
+</html>
