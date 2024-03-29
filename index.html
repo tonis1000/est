@@ -18,17 +18,18 @@ User
             font-family: Arial, sans-serif;
         }
 
-        #sidebar {
-            width: 230px;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px; /* Hier habe ich die linke und rechte Innenpolsterung auf 20px erhöht */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            flex-direction: column;
-            margin-right: 10px;
-    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
-    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
+#sidebar {
+    width: 230px;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    /* flex-direction: column;  <-- Entfernen Sie diese Zeile */
+    margin-right: 10px;
+    overflow-y: auto;
+    max-height: calc(100vh - 50px);
 }
+
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
