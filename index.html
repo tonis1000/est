@@ -22,14 +22,10 @@
     color: white;
     padding: 10px 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    flex-direction: column;
+    flex-shrink: 0; /* Sidebar wird nicht verkleinert */
     overflow-y: auto;
-    max-height: 100%;
-    position: relative;
-    z-index: 2; /* Stellen Sie sicher, dass die Sidebar über anderen Elementen liegt */
-    /* Weitere Stile nach Bedarf */
+    max-height: calc(100vh - 50px);
 }
-
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
@@ -79,18 +75,17 @@
             border-radius: 50%;
         }
 
-       #mainContent {
-    width: calc(100% - 260px); /* Platz für Sidebar berücksichtigen */
-    margin-right: 10px; /* Zusätzlicher Platz für die Sidebar */
-    float: left; /* Links anordnen */
-    /* Weitere Stile nach Bedarf */
-        }
+#mainContent {
+    flex-grow: 1;
+    padding: 10px;
 
 #additionalContent {
-    width: 300px; /* Breite des zusätzlichen Inhaltsbereichs */
-    float: left; /* Links anordnen */
-    /* Weitere Stile nach Bedarf */
+    width: 440px;
+    padding: 10px;
+    box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
+    flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
 }
+
 
         #additionalContent iframe {
             width: 440px;
