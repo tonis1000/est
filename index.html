@@ -338,20 +338,20 @@ function loadChannels1() {
             channelList.innerHTML = ''; // Clear existing channel list
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, info] = line.split(',');
-                    const matches = info.match(/ tvg-id="([^"]+)" group-title="([^"]+)"/);
-                    const channelName = matches ? matches[2] : 'Unknown'; // If group-title attribute is found, use it, otherwise use 'Unknown'
-                    const channelURL = lines[lines.indexOf(line) + 1].trim();
+                    const [, properties] = line.split('tvg-id="'); // Extract properties part
+                    const channelID = properties.split('"')[0].trim(); // Extract channel ID
+                    let [, channelName] = line.split(','); // Extract channel name part
+                    channelName = channelName.trim(); // Trim whitespace
                     const channelItem = document.createElement('li');
                     channelItem.textContent = channelName;
-                    channelItem.setAttribute('data-url', channelURL);
+                    channelItem.setAttribute('data-url', lines[lines.indexOf(line) + 1].trim());
                     channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, channelName); // Call playChannel function
+                        playChannel(this.getAttribute('data-url'), channelName); // Call playChannel function
                     });
                     channelList.appendChild(channelItem);
 
                     // Check and mark online status
-                    checkChannelOnline(channelURL, channelItem);
+                    checkChannelOnline(channelItem.getAttribute('data-url'), channelItem);
                 }
             });
         })
@@ -359,6 +359,7 @@ function loadChannels1() {
             console.error('Error loading channels:', error);
         });
 }
+
 
 
 
