@@ -351,15 +351,25 @@ function loadChannels1() {
 
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, title] = line.split(',');
-                    currentChannelName = title.split('(')[0].trim();
-                } else if (line.trim() !== '') {
-                    currentChannelURL = line.trim();
                     if (currentChannelName && currentChannelURL) {
                         addChannelToList(currentChannelName, currentChannelURL, channelList);
+                        currentChannelName = null;
+                        currentChannelURL = null;
                     }
+                    const [, title] = line.split(',');
+                    currentChannelName = title.split('(')[0].trim();
+                } else if (line.trim() !== '' && currentChannelName) {
+                    currentChannelURL = line.trim();
+                    addChannelToList(currentChannelName, currentChannelURL, channelList);
+                    currentChannelName = null;
+                    currentChannelURL = null;
                 }
             });
+
+            // Prüfen, ob noch ein Kanal übrig ist
+            if (currentChannelName && currentChannelURL) {
+                addChannelToList(currentChannelName, currentChannelURL, channelList);
+            }
         })
         .catch(error => {
             console.error('Fehler beim Laden der Kanäle:', error);
@@ -375,6 +385,7 @@ function addChannelToList(name, url, listElement) {
     });
     listElement.appendChild(channelItem);
 }
+
 
 
 
