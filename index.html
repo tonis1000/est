@@ -326,6 +326,11 @@
         xhr.open('GET', 'channels.json', true);
         xhr.send();
     }
+
+
+
+
+
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
@@ -338,7 +343,7 @@ function loadChannels1() {
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
                     const [, title] = line.split(',');
-                    const channelName = title.split('(')[0].trim();
+                    const channelName = title.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)[1].trim(); // Regex zum Extrahieren des Kanalnamens
                     const channelURL = lines[lines.indexOf(line) + 1].trim();
                     const channelItem = document.createElement('li');
                     channelItem.textContent = channelName;
@@ -357,6 +362,14 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
+
+
+
+
+
+
+    
 
 // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
 function checkChannelOnline(url, element) {
