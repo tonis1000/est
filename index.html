@@ -24,13 +24,11 @@ User
     color: white;
     padding: 10px 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    /* position: fixed; */ /* Entfernen Sie diese Zeile */
-    position: relative; /* Fügen Sie diese Zeile hinzu */
-    margin-right: 10px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
     overflow-y: auto;
-    max-height: calc(100vh - 50px);
 }
-
 
         #channelList {
             list-style: none;
@@ -81,14 +79,19 @@ User
             border-radius: 50%;
         }
 
-        #mainContent {
-            #flex-grow: 1;
-            #padding: 10px;
-        }
+#mainContent {
+    margin-left: 250px; /* Breite der Sidebar plus 20px Abstand */
+    padding: 10px;
+}
+#my-video {
+    width: 100%; /* Breite des Videoplayers 100% */
+    height: calc(100vh - 20px); /* Höhe des Videoplayers so, dass er den verbleibenden Bildschirm ausfüllt, nachdem die Kopfzeile subtrahiert wurde */
+}
 
-        #additionalContent {
-            margin-left: 10px; /* Änderung der Margin, da die vorherige redundant war */
-        }
+#additionalContent {
+    margin-left: 250px; /* Breite der Sidebar plus 20px Abstand */
+    padding: 10px;
+}
 
         #additionalContent iframe {
             width: 440px;
@@ -351,11 +354,11 @@ function loadChannels1() {
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
                     const [, properties] = line.split(' ');
-                    const titleIndex = properties.indexOf('tvg-name="');
+                    const titleIndex = properties.indexOf('group-title="');
                     if (titleIndex !== -1) {
-                        const endQuoteIndex = properties.indexOf('"', titleIndex + 10);
+                        const endQuoteIndex = properties.indexOf('"', titleIndex + 13);
                         if (endQuoteIndex !== -1) {
-                            channelName = properties.substring(titleIndex + 10, endQuoteIndex);
+                            channelName = properties.substring(titleIndex + 13, endQuoteIndex);
                         }
                     } else {
                         const [, title] = line.split(',');
@@ -382,6 +385,7 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
 
 
 
