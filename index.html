@@ -327,6 +327,11 @@ User
         xhr.open('GET', 'channels.json', true);
         xhr.send();
     }
+
+
+
+
+
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
@@ -336,22 +341,29 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Clear existing channel list
+            let currentChannelName = null;
+
             lines.forEach(line => {
+                line = line.trim();
                 if (line.startsWith('#EXTINF:')) {
-                    const [, properties] = line.split('tvg-id="'); // Extract properties part
-                    const channelID = properties.split('"')[0].trim(); // Extract channel ID
-                    let [, channelName] = line.split(','); // Extract channel name part
-                    channelName = channelName.trim(); // Trim whitespace
+                    const match = line.match(/tvg-id="([^"]*)"/); // Extract tvg-id attribute
+                    if (match) {
+                        currentChannelName = match[1]; // Set current channel name from tvg-id
+                    } else {
+                        const [, properties] = line.split('tvg-id="'); // Extract properties part
+                        currentChannelName = properties.split('"')[0].trim(); // Extract channel ID
+                    }
+                } else if (line && line.startsWith('http')) {
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = channelName;
-                    channelItem.setAttribute('data-url', lines[lines.indexOf(line) + 1].trim());
+                    channelItem.textContent = currentChannelName || 'Unknown'; // Set channel name or default to 'Unknown'
+                    channelItem.setAttribute('data-url', line.trim());
                     channelItem.addEventListener('click', function () {
-                        playChannel(this.getAttribute('data-url'), channelName); // Call playChannel function
+                        playChannel(this.getAttribute('data-url'), this.textContent); // Call playChannel function
                     });
                     channelList.appendChild(channelItem);
 
                     // Check and mark online status
-                    checkChannelOnline(channelItem.getAttribute('data-url'), channelItem);
+                    checkChannelOnline(line.trim(), channelItem);
                 }
             });
         })
@@ -359,6 +371,10 @@ function loadChannels1() {
             console.error('Error loading channels:', error);
         });
 }
+
+
+
+    
 
 
 
