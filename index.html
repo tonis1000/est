@@ -340,37 +340,30 @@ function loadChannels1() {
         .then(data => {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Clear existing channel list
-            let currentChannelName = null;
-
+            channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
             lines.forEach(line => {
-                line = line.trim();
                 if (line.startsWith('#EXTINF:')) {
-                    const match = line.match(/tvg-id="([^"]*)"/); // Extract tvg-id attribute
-                    if (match) {
-                        currentChannelName = match[1]; // Set current channel name from tvg-id
-                    } else {
-                        const [, properties] = line.split('tvg-id="'); // Extract properties part
-                        currentChannelName = properties.split('"')[0].trim(); // Extract channel ID
-                    }
-                } else if (line && line.startsWith('http')) {
+                    const [, attributes] = line.split(' ', 2);
+                    const [, channelName] = attributes.match(/(?:,(.*?)[\s])/);
+                    const channelURL = lines[lines.indexOf(line) + 1].trim();
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = currentChannelName || 'Unknown'; // Set channel name or default to 'Unknown'
-                    channelItem.setAttribute('data-url', line.trim());
+                    channelItem.textContent = channelName;
+                    channelItem.setAttribute('data-url', channelURL);
                     channelItem.addEventListener('click', function () {
-                        playChannel(this.getAttribute('data-url'), this.textContent); // Call playChannel function
+                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
                     });
                     channelList.appendChild(channelItem);
 
-                    // Check and mark online status
-                    checkChannelOnline(line.trim(), channelItem);
+                    // Überprüfen und Markieren des Online-Status
+                    checkChannelOnline(channelURL, channelItem);
                 }
             });
         })
         .catch(error => {
-            console.error('Error loading channels:', error);
+            console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
 
 
 
