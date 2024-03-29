@@ -332,7 +332,10 @@
 
 
 
-function loadChannels1() {
+
+
+
+    function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
     fetch(playlistURL)
@@ -341,22 +344,34 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-            let currentChannelName = '';
+            let channelName = '';
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    currentChannelName = line.split(',')[1].trim();
+                    const [, properties] = line.split(' ');
+                    const titleIndex = properties.indexOf('group-title="');
+                    if (titleIndex !== -1) {
+                        const endQuoteIndex = properties.indexOf('"', titleIndex + 13);
+                        if (endQuoteIndex !== -1) {
+                            channelName = properties.substring(titleIndex + 13, endQuoteIndex);
+                        }
+                    } else {
+                        const [, title] = line.split(',');
+                        channelName = title.split('(')[0].trim();
+                    }
                 } else if (line.startsWith('http')) {
                     const channelURL = line.trim();
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = currentChannelName;
-                    channelItem.setAttribute('data-url', channelURL);
-                    channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, currentChannelName); // playChannel-Funktion aufrufen
-                    });
-                    channelList.appendChild(channelItem);
+                    if (channelName !== '') { // Sicherstellen, dass der Kanalname nicht leer ist
+                        channelItem.textContent = channelName;
+                        channelItem.setAttribute('data-url', channelURL);
+                        channelItem.addEventListener('click', function () {
+                            playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
+                        });
+                        channelList.appendChild(channelItem);
 
-                    // Überprüfen und Markieren des Online-Status
-                    checkChannelOnline(channelURL, channelItem);
+                        // Überprüfen und Markieren des Online-Status
+                        checkChannelOnline(channelURL, channelItem);
+                    }
                 }
             });
         })
@@ -364,7 +379,6 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
-
 
 
 
