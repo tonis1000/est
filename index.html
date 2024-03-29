@@ -18,16 +18,17 @@
         }
 
         #sidebar {
-            width: 230px;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px; /* Hier habe ich die linke und rechte Innenpolsterung auf 20px erhöht */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            flex-direction: column;
-            margin-right: 10px;
-    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
-    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
+    width: 230px;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    margin-right: 10px;
+    overflow-y: auto;
+    max-height: 100%; /* Ändern Sie die maximale Höhe auf 100% */
 }
+
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
@@ -340,16 +341,17 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
+            let currentChannelName = '';
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, title] = line.split(',');
-                    const channelName = title.split(',')[1].trim();
-                    const channelURL = lines[lines.indexOf(line) + 1].trim();
+                    currentChannelName = line.split(',')[1].trim();
+                } else if (line.startsWith('http')) {
+                    const channelURL = line.trim();
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = channelName;
+                    channelItem.textContent = currentChannelName;
                     channelItem.setAttribute('data-url', channelURL);
                     channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
+                        playChannel(channelURL, currentChannelName); // playChannel-Funktion aufrufen
                     });
                     channelList.appendChild(channelItem);
 
@@ -362,6 +364,7 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
 
 
 
