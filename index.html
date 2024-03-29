@@ -342,15 +342,34 @@ function loadChannels1() {
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
             let currentChannelName = ''; // Variablendefinition für den aktuellen Kanalnamen
+            let currentChannelLogo = ''; // Variablendefinition für das aktuelle Kanallogo
+            let currentChannelID = ''; // Variablendefinition für die aktuelle Kanal-ID
             lines.forEach(line => {
+                // Extrahiere den Kanalnamen, das Logo und die ID aus der Zeile
                 if (line.startsWith('#EXTINF:')) {
-                    // Wenn eine Zeile mit "#EXTINF:" beginnt, wird der Kanalname extrahiert
-                    currentChannelName = line.split(',')[1].trim();
+                    const infoParts = line.split(',');
+                    currentChannelName = infoParts[1].trim();
+                    const tvgInfo = infoParts[0].split(' ');
+                    for (let i = 0; i < tvgInfo.length; i++) {
+                        if (tvgInfo[i].startsWith('tvg-logo=')) {
+                            currentChannelLogo = tvgInfo[i].substring(10).replace(/"/g, '');
+                        }
+                        if (tvgInfo[i].startsWith('tvg-id=')) {
+                            currentChannelID = tvgInfo[i].substring(7).replace(/"/g, '');
+                        }
+                    }
                 } else if (line.trim().startsWith('http')) {
                     // Wenn die Zeile mit "http" beginnt, wird sie als Kanal-URL betrachtet
                     const channelURL = line.trim();
                     const channelItem = document.createElement('li');
+                    // Kanalname, Logo und ID werden dem Element hinzugefügt
                     channelItem.textContent = currentChannelName;
+                    if (currentChannelLogo !== '') {
+                        channelItem.setAttribute('tvg-logo', currentChannelLogo);
+                    }
+                    if (currentChannelID !== '') {
+                        channelItem.setAttribute('tvg-id', currentChannelID);
+                    }
                     channelItem.setAttribute('data-url', channelURL);
                     channelItem.addEventListener('click', function () {
                         playChannel(channelURL, currentChannelName); // playChannel-Funktion aufrufen
@@ -359,6 +378,10 @@ function loadChannels1() {
 
                     // Überprüfen und Markieren des Online-Status
                     checkChannelOnline(channelURL, channelItem);
+                    // Zurücksetzen der Variablen für den nächsten Kanal
+                    currentChannelName = '';
+                    currentChannelLogo = '';
+                    currentChannelID = '';
                 }
             });
         })
