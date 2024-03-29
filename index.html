@@ -335,7 +335,6 @@ User
 
 
 
-
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
@@ -345,22 +344,22 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-            let channelName = ''; // Variable für den Kanalnamen
+            let channelName = '';
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    let [, title] = line.split(',');
-                    // Überprüfen, ob der Kanalname in der Zeile enthalten ist
-                    if (title.includes('group-title')) {
-                        channelName = title.split('group-title="')[1].split('"')[0].trim(); // Gruppen-Titel als Kanalnamen nehmen
-                    } else {
-                        // Prüfen, ob das Komma im Titel vorhanden ist
-                        if (title.includes(',')) {
-                            channelName = title.split(',')[1].trim(); // Den Teil nach dem Komma als Kanalnamen nehmen
-                        } else {
-                            channelName = title.trim(); // Andernfalls den gesamten Titel als Kanalnamen nehmen
+                    const [, properties] = line.split(' ');
+                    const titleIndex = properties.indexOf('tvg-name="');
+                    if (titleIndex !== -1) {
+                        const endQuoteIndex = properties.indexOf('"', titleIndex + 10);
+                        if (endQuoteIndex !== -1) {
+                            channelName = properties.substring(titleIndex + 10, endQuoteIndex);
                         }
+                    } else {
+                        const [, title] = line.split(',');
+                        channelName = title.split('(')[0].trim();
                     }
-                    const channelURL = lines[lines.indexOf(line) + 1].trim();
+                } else if (line.startsWith('http')) {
+                    const channelURL = line.trim();
                     const channelItem = document.createElement('li');
                     channelItem.textContent = channelName;
                     channelItem.setAttribute('data-url', channelURL);
