@@ -331,7 +331,6 @@ User
 
 
 
-
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
@@ -343,8 +342,8 @@ function loadChannels1() {
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, attributes] = line.split(' ', 2);
-                    const [, channelName] = attributes.match(/(?:,(.*?)[\s])/);
+                    const [, title] = line.split(',');
+                    const channelName = title.split('(')[0].trim();
                     const channelURL = lines[lines.indexOf(line) + 1].trim();
                     const channelItem = document.createElement('li');
                     channelItem.textContent = channelName;
@@ -363,6 +362,7 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
 
 
 
