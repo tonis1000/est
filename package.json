@@ -8,10 +8,9 @@
     "proxy": "node proxy-script.js"
   },
   "dependencies": {
-    "express": "^4.17.2",
-    "hls.js": "^latest"
+    "express": "^4.19.2",
+    "hls.js": "^1.5.7"
   },
-  "devDependencies": {},
   "keywords": [],
   "author": "",
   "license": "ISC"
