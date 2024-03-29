@@ -9,6 +9,11 @@ app.use((req, res, next) => {
     next();
 });
 
+// Route für den Wurzelpfad
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
+
 // Starte den Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
