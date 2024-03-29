@@ -339,8 +339,8 @@ function loadChannels1() {
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
                     const [, info] = line.split(',');
-                    const matches = info.match(/ group-title="([^"]+)"/);
-                    const channelName = matches ? matches[1] : 'Unknown'; // If group-title attribute is found, use it, otherwise use 'Unknown'
+                    const matches = info.match(/ tvg-id="([^"]+)" group-title="([^"]+)"/);
+                    const channelName = matches ? matches[2] : 'Unknown'; // If group-title attribute is found, use it, otherwise use 'Unknown'
                     const channelURL = lines[lines.indexOf(line) + 1].trim();
                     const channelItem = document.createElement('li');
                     channelItem.textContent = channelName;
@@ -359,6 +359,7 @@ function loadChannels1() {
             console.error('Error loading channels:', error);
         });
 }
+
 
 
 // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
