@@ -348,12 +348,17 @@ function loadChannels1() {
             let channelName = ''; // Variable für den Kanalnamen
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, title] = line.split(',');
+                    let [, title] = line.split(',');
                     // Überprüfen, ob der Kanalname in der Zeile enthalten ist
-                    if (title.includes(',')) {
-                        channelName = title.split(',')[1].trim(); // Den Teil nach dem Komma als Kanalnamen nehmen
+                    if (title.includes('group-title')) {
+                        channelName = title.split('group-title="')[1].split('"')[0].trim(); // Gruppen-Titel als Kanalnamen nehmen
                     } else {
-                        channelName = title.trim(); // Andernfalls den gesamten Titel als Kanalnamen nehmen
+                        // Prüfen, ob das Komma im Titel vorhanden ist
+                        if (title.includes(',')) {
+                            channelName = title.split(',')[1].trim(); // Den Teil nach dem Komma als Kanalnamen nehmen
+                        } else {
+                            channelName = title.trim(); // Andernfalls den gesamten Titel als Kanalnamen nehmen
+                        }
                     }
                     const channelURL = lines[lines.indexOf(line) + 1].trim();
                     const channelItem = document.createElement('li');
@@ -373,6 +378,7 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
 
 
 
