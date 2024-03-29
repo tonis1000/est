@@ -339,23 +339,22 @@ function loadChannels1() {
         .then(data => {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
+            channelList.innerHTML = ''; // Vorhandene Kanalliste löschen
             let currentChannelName = '';
-            let currentChannelLogo = '';
             let currentChannelID = '';
+            let currentChannelLogo = '';
             lines.forEach(line => {
                 // Wenn die Zeile mit "#EXTINF:" beginnt, extrahiere Informationen
                 if (line.startsWith('#EXTINF:')) {
-                    const infoParts = line.split(',');
-                    currentChannelName = infoParts[1].trim();
-                    const tvgInfo = infoParts[0].split(' ');
-                    tvgInfo.forEach(info => {
-                        if (info.startsWith('tvg-id=')) {
-                            currentChannelID = info.substring(7).replace(/"/g, '');
-                        } else if (info.startsWith('tvg-logo=')) {
-                            currentChannelLogo = info.substring(10).replace(/"/g, '');
-                        }
-                    });
+                    currentChannelName = line.split(',')[1].trim();
+                    const tvgInfo = line.match(/tvg-id="([^"]*)"/);
+                    if (tvgInfo) {
+                        currentChannelID = tvgInfo[1];
+                    }
+                    const logoInfo = line.match(/tvg-logo="([^"]*)"/);
+                    if (logoInfo) {
+                        currentChannelLogo = logoInfo[1];
+                    }
                 }
                 // Wenn die Zeile mit "http" beginnt, handelt es sich um die Kanal-URL
                 else if (line.trim().startsWith('http')) {
@@ -380,8 +379,8 @@ function loadChannels1() {
                     checkChannelOnline(channelURL, channelItem);
                     // Setze Variablen für den nächsten Kanal zurück
                     currentChannelName = '';
-                    currentChannelLogo = '';
                     currentChannelID = '';
+                    currentChannelLogo = '';
                 }
             });
         })
