@@ -24,11 +24,13 @@ User
     color: white;
     padding: 10px 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    /* flex-direction: column;  <-- Entfernen Sie diese Zeile */
+    /* position: fixed; */ /* Entfernen Sie diese Zeile */
+    position: relative; /* Fügen Sie diese Zeile hinzu */
     margin-right: 10px;
     overflow-y: auto;
     max-height: calc(100vh - 50px);
 }
+
 
         #channelList {
             list-style: none;
@@ -362,15 +364,17 @@ function loadChannels1() {
                 } else if (line.startsWith('http')) {
                     const channelURL = line.trim();
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = channelName;
-                    channelItem.setAttribute('data-url', channelURL);
-                    channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
-                    });
-                    channelList.appendChild(channelItem);
+                    if (channelName !== '') { // Sicherstellen, dass der Kanalname nicht leer ist
+                        channelItem.textContent = channelName;
+                        channelItem.setAttribute('data-url', channelURL);
+                        channelItem.addEventListener('click', function () {
+                            playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
+                        });
+                        channelList.appendChild(channelItem);
 
-                    // Überprüfen und Markieren des Online-Status
-                    checkChannelOnline(channelURL, channelItem);
+                        // Überprüfen und Markieren des Online-Status
+                        checkChannelOnline(channelURL, channelItem);
+                    }
                 }
             });
         })
@@ -378,6 +382,7 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
 
 
 
