@@ -350,8 +350,8 @@ function loadChannels1() {
                 if (line.startsWith('#EXTINF:')) {
                     const [, title] = line.split(',');
                     // Überprüfen, ob der Kanalname in der Zeile enthalten ist
-                    if (title.includes(':')) {
-                        channelName = title.split(':')[1].trim(); // Den Teil nach dem Doppelpunkt als Kanalnamen nehmen
+                    if (title.includes(',')) {
+                        channelName = title.split(',')[1].trim(); // Den Teil nach dem Komma als Kanalnamen nehmen
                     } else {
                         channelName = title.trim(); // Andernfalls den gesamten Titel als Kanalnamen nehmen
                     }
