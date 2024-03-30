@@ -14,7 +14,7 @@ async function makeProxyRequest(url) {
 }
 
 // Beispielaufruf der Proxy-Funktion
-const proxyURL = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgluk03%2Fiptvgluk%2Fdd9409c9f9029f6444633267e3031741efedc381%2FTV.m3u';
+const proxyURL = 'https://raw.githubusercontent.com/tonis1000/atonis/master/proxy.php';
 makeProxyRequest(proxyURL)
   .then(data => {
     console.log('Proxy response:', data);
