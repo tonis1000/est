@@ -1,29 +1,25 @@
-const express = require('express');
-const axios = require('axios');
-
-const app = express();
-const PORT = 3000;
-
-// Middleware für CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*'); // Hier können Sie die erlaubten Ursprünge spezifizieren
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
-
-// Endpunkt für Proxy-Anfragen
-app.get('/proxy', async (req, res) => {
+// Funktion zum Ausführen einer Proxy-Anfrage im Browser
+async function makeProxyRequest(url) {
   try {
     // Hier wird die Anfrage an den externen Server gesendet
-    const response = await axios.get(req.query.url); // Die URL wird als Query-Parameter übergeben
-    res.json(response.data); // Die Daten werden an den Client zurückgesendet
+    const response = await fetch(url); // Fetch-API verwenden, um die Anfrage zu senden
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return await response.json(); // Die Daten als JSON zurückgeben
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Proxy request failed:', error);
+    throw error; // Fehler weiterleiten
   }
-});
+}
 
-// Starten Sie den Server
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Beispielaufruf der Proxy-Funktion
+const proxyURL = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url=https%3A%2F%2Fraw.githubusercontent.com%2Fgluk03%2Fiptvgluk%2Fdd9409c9f9029f6444633267e3031741efedc381%2FTV.m3u';
+makeProxyRequest(proxyURL)
+  .then(data => {
+    console.log('Proxy response:', data);
+    // Hier kannst du die erhaltenen Daten verarbeiten
+  })
+  .catch(error => {
+    console.error('Proxy request failed:', error);
+  });
