@@ -1,11 +1,11 @@
 <?php
-// Ziel-URL festlegen
-$targetUrl = $_GET['url'];
+header("Access-Control-Allow-Origin: *"); // Erlaubt den Zugriff von allen Domains
+header("Content-Type: text/plain");
 
-// Anfrage an die Ziel-URL senden und Antwort abrufen
-$response = file_get_contents($targetUrl);
-
-// Antwort an den Client senden
-header('Content-Type: application/json');
-echo $response;
+if (isset($_GET['url'])) {
+    $url = urldecode($_GET['url']);
+    echo file_get_contents($url);
+} else {
+    echo 'URL-Parameter fehlt.';
+}
 ?>
