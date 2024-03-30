@@ -339,13 +339,11 @@ function loadChannels() {
 
 
 
-
-    
 function loadChannels1() {
     var proxyURL = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url='; // Proxy-URL hier einfügen
-    var playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u'; // URL zur Playlist hier einfügen
+    const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
-    fetch(proxyURL + encodeURIComponent(playlistURL))
+    fetch(playlistURL)
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n');
@@ -374,6 +372,8 @@ function loadChannels1() {
         });
 }
 
+
+    
 
 
 
