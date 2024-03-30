@@ -315,35 +315,41 @@
         checkOnlineStatus();
     });
 
+
+
+
+
+
+
+
     function loadChannels() {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                var data = JSON.parse(xhr.responseText);
-                var channelList = document.getElementById('channelList');
-                channelList.innerHTML = ''; // Vorhandene Liste löschen
-                data.forEach(function (channel) {
-                    var li = document.createElement('li');
-                    li.textContent = channel.name;
-                    li.setAttribute('data-url', channel.url);
-                    channelList.appendChild(li);
-                });
-                addClickListeners(); // Event-Listener hinzufügen
-                checkOnlineStatus(); // Online-Status überprüfen
-            }
-        };
-        xhr.open('GET', 'channels.json', true);
-        xhr.send();
-    }
+    var proxyUrl = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url='; // Hier die URL deines Proxys einfügen
+    var targetUrl = 'https://deinserver.com/channels.json'; // Beispiel-URL für deine Kanaldaten
 
-
-
-
+    fetch(proxyUrl + encodeURIComponent(targetUrl))
+        .then(response => response.json())
+        .then(data => {
+            var channelList = document.getElementById('channelList');
+            channelList.innerHTML = ''; // Vorhandene Liste löschen
+            data.forEach(function (channel) {
+                var li = document.createElement('li');
+                li.textContent = channel.name;
+                li.setAttribute('data-url', channel.url);
+                channelList.appendChild(li);
+            });
+            addClickListeners(); // Event-Listener hinzufügen
+            checkOnlineStatus(); // Online-Status überprüfen
+        })
+        .catch(error => {
+            console.error('Fehler beim Laden der Kanäle:', error);
+        });
+}
 
 function loadChannels1() {
-    const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
+    var proxyUrl = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url='; // Hier die URL deines Proxys einfügen
+    var targetUrl = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
-    fetch(playlistURL)
+    fetch(proxyUrl + encodeURIComponent(targetUrl))
         .then(response => response.text())
         .then(data => {
             const lines = data.split('\n');
@@ -371,7 +377,6 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
-
 
 
 
