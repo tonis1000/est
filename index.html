@@ -242,13 +242,6 @@
 
             videoElement.play(); // Direkt abspielen
         }
-            // Feature Detection für HLS
-    if (typeof Hls !== 'undefined') {
-        hls = new Hls();
-    } else {
-        // Hier kannst du alternative Logik implementieren, falls HLS nicht unterstützt wird
-        console.error('HLS wird von diesem Browser nicht unterstützt.');
-    }
 
         function addClickListeners() {
             var channelListItems = document.querySelectorAll('#channelList li');
@@ -315,32 +308,32 @@
         checkOnlineStatus();
     });
 
+    function loadChannels() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var channelList = document.getElementById('channelList');
+                channelList.innerHTML = ''; // Vorhandene Liste löschen
+                data.forEach(function (channel) {
+                    var li = document.createElement('li');
+                    li.textContent = channel.name;
+                    li.setAttribute('data-url', channel.url);
+                    channelList.appendChild(li);
+                });
+                addClickListeners(); // Event-Listener hinzufügen
+                checkOnlineStatus(); // Online-Status überprüfen
+            }
+        };
+        xhr.open('GET', 'channels.json', true);
+        xhr.send();
+    }
 
 
-
-
-
-function loadChannels() {
-    var proxyURL = 'https://raw.githubusercontent.com/tonis1000/atonis/master/proxy.php?url='; // Proxy-URL hier einfügen
-    var playlistURL = 'https://tonis1000.github.io/atonis/channels.html'; // URL zur Liste der Kanäle hier einfügen
-
-    // Verwenden des Proxy-URLs, um CORS-Probleme zu umgehen
-    fetch(proxyURL + encodeURIComponent(playlistURL))
-        .then(response => response.text())
-        .then(data => {
-            // Verarbeiten der Kanalliste hier
-            // Der Rest des Codes bleibt gleich wie zuvor
-            // ...
-        })
-        .catch(error => {
-            console.error('Fehler beim Laden der Kanäle:', error);
-        });
-}
 
 
 
 function loadChannels1() {
-    var proxyURL = 'https://raw.githubusercontent.com/tonis1000/atonis/master/proxy.php?url='; // Proxy-URL hier einfügen
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
     fetch(playlistURL)
@@ -373,7 +366,6 @@ function loadChannels1() {
 }
 
 
-    
 
 
 
@@ -406,4 +398,4 @@ function checkChannelOnline(url, element) {
 </script>
 
 </body>
-</html> 
+</html>
