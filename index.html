@@ -242,6 +242,13 @@
 
             videoElement.play(); // Direkt abspielen
         }
+            // Feature Detection für HLS
+    if (typeof Hls !== 'undefined') {
+        hls = new Hls();
+    } else {
+        // Hier kannst du alternative Logik implementieren, falls HLS nicht unterstützt wird
+        console.error('HLS wird von diesem Browser nicht unterstützt.');
+    }
 
         function addClickListeners() {
             var channelListItems = document.querySelectorAll('#channelList li');
