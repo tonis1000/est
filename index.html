@@ -320,31 +320,27 @@
 
 
 
+function loadChannels() {
+    var proxyURL = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url='; // Proxy-URL hier einfügen
+    var playlistURL = 'https://tonis1000.github.io/atonis/channels.html'; // URL zur Liste der Kanäle hier einfügen
 
-
-    function loadChannels() {
-    var proxyUrl = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url='; // Hier die URL deines Proxys einfügen
-    var targetUrl = 'https://deinserver.com/channels.json'; // Beispiel-URL für deine Kanaldaten
-
-    fetch(proxyUrl + encodeURIComponent(targetUrl))
-        .then(response => response.json())
+    // Verwenden des Proxy-URLs, um CORS-Probleme zu umgehen
+    fetch(proxyURL + encodeURIComponent(playlistURL))
+        .then(response => response.text())
         .then(data => {
-            var channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Vorhandene Liste löschen
-            data.forEach(function (channel) {
-                var li = document.createElement('li');
-                li.textContent = channel.name;
-                li.setAttribute('data-url', channel.url);
-                channelList.appendChild(li);
-            });
-            addClickListeners(); // Event-Listener hinzufügen
-            checkOnlineStatus(); // Online-Status überprüfen
+            // Verarbeiten der Kanalliste hier
+            // Der Rest des Codes bleibt gleich wie zuvor
+            // ...
         })
         .catch(error => {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
 
+
+
+
+    
 function loadChannels1() {
     var proxyUrl = 'https://github.com/tonis1000/atonis/blob/master/proxy.php?url='; // Hier die URL deines Proxys einfügen
     var targetUrl = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
