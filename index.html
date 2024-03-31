@@ -17,16 +17,17 @@
             font-family: Arial, sans-serif;
         }
 
-       #sidebar {
-    width: 230px;
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Sidebar wird nicht verkleinert */
-    overflow-y: auto;
-    max-height: calc(100vh - 50px);
-}
+        #sidebar {
+            width: 230px;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0; /* Sidebar wird nicht verkleinert */
+            overflow-y: auto;
+            max-height: calc(100vh - 50px);
+        }
+
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
@@ -76,18 +77,17 @@
             border-radius: 50%;
         }
 
-#mainContent {
-    flex-grow: 0;
-    padding: 10px;
-}
+        #mainContent {
+            flex-grow: 0;
+            padding: 10px;
         }
 
-#additionalContent {
-    width: 440px;
-    padding: 10px;
-    box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
-    flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
-}
+        #additionalContent {
+            width: 440px;
+            padding: 10px;
+            box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
+            flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
+        }
 
         #additionalContent iframe {
             width: 440px;
@@ -108,7 +108,7 @@
     <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
     <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
     <ul id="channelList">
-<li data-url="https://88.99.254.101/ert1/mono.m3u8">ERT1</li>
+        <li data-url="https://88.99.254.101/ert1/mono.m3u8">ERT1</li>
 <li data-url="https://88.99.254.101/ert2/mono.m3u8" tvg-id="ERT2.gr" tvg-logo="https://i.imgur.com/nMHKG3A.png">ERT2</li>
         
 <li data-url="https://88.99.254.101/ert3/mono.m3u8" tvg-id="ERT3.gr" tvg-logo="https://i.imgur.com/f2l9bDR.png">ERT3</li>
@@ -188,7 +188,7 @@
         <button id="playButton">▶</button>
     </div>
     
-    <video id="my-video" controls preload="auto" width="1400" height="900" src="http://example.com/stream.m3u8"></video>
+    <video id="my-video" controls preload="auto" width="1400" height="900" src=""></video>
 
 </div>
 
@@ -196,7 +196,6 @@
     <h2>Zusätzlicher Inhalt</h2>
     <iframe src="https://foothubhd.xyz/" width="100%" height="500px" frameborder="0"></iframe>
     <script src="proxy-script.js"></script>
-
 </div>
 
 <script>
@@ -225,6 +224,9 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Hier werden die Kanäle dynamisch geladen
+        loadChannels();
+
         var videoElement = document.getElementById('my-video');
         var currentChannelNameElement = document.getElementById('currentChannelName');
         var currentChannelLinkElement = document.getElementById('currentChannelLink');
@@ -332,79 +334,54 @@
         xhr.send();
     }
 
+    function loadChannels1() {
+        const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
+        fetch(playlistURL)
+            .then(response => response.text())
+            .then(data => {
+                const lines = data.split('\n');
+                const channelList = document.getElementById('channelList');
+                channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
+                lines.forEach(line => {
+                    if (line.startsWith('#EXTINF:')) {
+                        const [, title] = line.split(',');
+                        const channelName = title.split('(')[0].trim();
+                        const channelURL = lines[lines.indexOf(line) + 1].trim();
+                        const channelItem = document.createElement('li');
+                        channelItem.textContent = channelName;
+                        channelItem.setAttribute('data-url', channelURL);
+                        channelItem.addEventListener('click', function () {
+                            playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
+                        });
+                        channelList.appendChild(channelItem);
 
-
-
-
-
-
-function loadChannels1() {
-    const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
-
-    fetch(playlistURL)
-        .then(response => response.text())
-        .then(data => {
-            const lines = data.split('\n');
-            const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-            lines.forEach(line => {
-                if (line.startsWith('#EXTINF:')) {
-                    const [, title] = line.split(',');
-                    const channelName = title.split('(')[0].trim();
-                    const channelURL = lines[lines.indexOf(line) + 1].trim();
-                    const channelItem = document.createElement('li');
-                    channelItem.textContent = channelName;
-                    channelItem.setAttribute('data-url', channelURL);
-                    channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
-                    });
-                    channelList.appendChild(channelItem);
-
-                    // Überprüfen und Markieren des Online-Status
-                    checkChannelOnline(channelURL, channelItem);
-                }
+                        // Überprüfen und Markieren des Online-Status
+                        checkChannelOnline(channelURL, channelItem);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Fehler beim Laden der Kanäle:', error);
             });
-        })
-        .catch(error => {
-            console.error('Fehler beim Laden der Kanäle:', error);
-        });
-}
+    }
 
-
-
-
-
-
-
-
-    
-
-
-    
-
-
-
-
-// Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
-function checkChannelOnline(url, element) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4) {
-            if (xhr.status === 200) {
-                element.classList.add('online'); // Fügen Sie die Klasse 'online' hinzu, wenn der Kanal online ist
+    // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
+    function checkChannelOnline(url, element) {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    element.classList.add('online'); // Fügen Sie die Klasse 'online' hinzu, wenn der Kanal online ist
+                }
             }
-        }
-    };
-    xhr.open('HEAD', url, true);
-    xhr.send();
-}
-
-
+        };
+        xhr.open('HEAD', url, true);
+        xhr.send();
+    }
 
     // Aktualisiere die Online-Status-Funktion alle 1 Minute
-    setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 1/2 Minute
-</script>
+    setInterval(checkOnlineStatus, 60000); // 60000 Millisekunden entsprechen 1 Minute</script>
 
 </body>
-</html> 
+</html>
