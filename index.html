@@ -346,27 +346,17 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-            let channelName = '';
+            let currentChannelName = '';
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, properties] = line.split(' ');
-                    const titleIndex = properties.indexOf('tvg-name="');
-                    if (titleIndex !== -1) {
-                        const endQuoteIndex = properties.indexOf('"', titleIndex + 10);
-                        if (endQuoteIndex !== -1) {
-                            channelName = properties.substring(titleIndex + 10, endQuoteIndex);
-                        }
-                    } else {
-                        const [, title] = line.split(',');
-                        channelName = title.split('(')[0].trim();
-                    }
+                    currentChannelName = line.split(',')[1].trim();
                 } else if (line.startsWith('http')) {
                     const channelURL = line.trim();
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = channelName;
+                    channelItem.textContent = currentChannelName;
                     channelItem.setAttribute('data-url', channelURL);
                     channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
+                        playChannel(channelURL, currentChannelName); // playChannel-Funktion aufrufen
                     });
                     channelList.appendChild(channelItem);
 
