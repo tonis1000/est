@@ -338,7 +338,7 @@
 
 
 function loadChannels1() {
-    const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
+    const playlistURL = 'https://raw.githubusercontent.com/PrantsOP/GreekIptvChannels/main/playlistGR.m3u';
 
     fetch(playlistURL)
         .then(response => response.text())
@@ -346,17 +346,16 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-            let currentChannelName = '';
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    currentChannelName = line.split(',')[1].trim();
-                } else if (line.startsWith('http')) {
-                    const channelURL = line.trim();
+                    const [, title] = line.split(',');
+                    const channelName = title.split('(')[0].trim();
+                    const channelURL = lines[lines.indexOf(line) + 1].trim();
                     const channelItem = document.createElement('li');
-                    channelItem.textContent = currentChannelName;
+                    channelItem.textContent = channelName;
                     channelItem.setAttribute('data-url', channelURL);
                     channelItem.addEventListener('click', function () {
-                        playChannel(channelURL, currentChannelName); // playChannel-Funktion aufrufen
+                        playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
                     });
                     channelList.appendChild(channelItem);
 
