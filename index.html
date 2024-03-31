@@ -204,24 +204,38 @@
     }
 
     // Definition der playChannel-Funktion
-    window.playChannel = function(url, channelName) {
-        var videoElement = document.getElementById('my-video');
-        var currentChannelNameElement = document.getElementById('currentChannelName');
-        var currentChannelLinkElement = document.getElementById('currentChannelLink');
-        var hls = new Hls();
+   window.playChannel = function(url, channelName) {
+    var videoElement = document.getElementById('my-video');
+    var currentChannelNameElement = document.getElementById('currentChannelName');
+    var currentChannelLinkElement = document.getElementById('currentChannelLink');
+    var hls = new Hls();
 
-        currentChannelNameElement.textContent = channelName;
-        currentChannelLinkElement.value = url;
+    currentChannelNameElement.textContent = channelName;
+    currentChannelLinkElement.value = url;
 
-        if (Hls.isSupported()) {
-            hls.loadSource(url);
-            hls.attachMedia(videoElement);
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            videoElement.src = url;
-        }
+    fetch(url, { method: 'HEAD' })
+        .then(response => {
+            if (response.status === 302) {
+                url = response.headers.get('Location'); // Aktualisieren der URL basierend auf der Weiterleitung
+            }
+            if (Hls.isSupported()) {
+                hls.loadSource(url);
+                hls.attachMedia(videoElement);
+                hls.on(Hls.Events.MANIFEST_PARSED, function () {
+                    videoElement.play();
+                });
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = url;
+                videoElement.addEventListener('loadedmetadata', function () {
+                    videoElement.play();
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Fehler beim Laden des Kanals:', error);
+        });
+};
 
-        videoElement.play(); // Direkt abspielen
-    };
 
     document.addEventListener('DOMContentLoaded', function () {
         // Hier werden die Kanäle dynamisch geladen
