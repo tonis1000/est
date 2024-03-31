@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebTV mit Sidebar</title>
+    
+    <!-- Fügen Sie die hls.js-Bibliothek hinzu -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    
     <style>
         body {
             display: flex;
@@ -314,6 +326,14 @@
         xhr.open('GET', 'channels.json', true);
         xhr.send();
     }
+
+
+
+
+
+
+
+
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
@@ -323,11 +343,22 @@ function loadChannels1() {
             const lines = data.split('\n');
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
+            let channelName = '';
             lines.forEach(line => {
                 if (line.startsWith('#EXTINF:')) {
-                    const [, title] = line.split(',');
-                    const channelName = title.split('(')[0].trim();
-                    const channelURL = lines[lines.indexOf(line) + 1].trim();
+                    const [, properties] = line.split(' ');
+                    const titleIndex = properties.indexOf('tvg-name="');
+                    if (titleIndex !== -1) {
+                        const endQuoteIndex = properties.indexOf('"', titleIndex + 10);
+                        if (endQuoteIndex !== -1) {
+                            channelName = properties.substring(titleIndex + 10, endQuoteIndex);
+                        }
+                    } else {
+                        const [, title] = line.split(',');
+                        channelName = title.split('(')[0].trim();
+                    }
+                } else if (line.startsWith('http')) {
+                    const channelURL = line.trim();
                     const channelItem = document.createElement('li');
                     channelItem.textContent = channelName;
                     channelItem.setAttribute('data-url', channelURL);
@@ -345,6 +376,21 @@ function loadChannels1() {
             console.error('Fehler beim Laden der Kanäle:', error);
         });
 }
+
+
+
+
+
+
+
+
+    
+
+
+    
+
+
+
 
 // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
 function checkChannelOnline(url, element) {
