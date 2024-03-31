@@ -1,31 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebTV mit Sidebar</title>
-    
-    <!-- Fügen Sie die hls.js-Bibliothek hinzu -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
-    
     <style>
         body {
             display: flex;
             margin: 0;
             font-family: Arial, sans-serif;
         }
-#sidebar {
-    width: 230px;
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Sidebar wird nicht verkleinert */
-    overflow-y: auto;
-    max-height: calc(100vh - 50px);
+
+        #sidebar {
+            width: 230px;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px; /* Hier habe ich die linke und rechte Innenpolsterung auf 20px erhöht */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            margin-right: 10px;
+    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
+    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
 }
         #channelList {
             list-style: none;
@@ -76,20 +65,17 @@
             border-radius: 50%;
         }
 
-#mainContent {
-    flex-grow: 0;
-    padding: 10px;
-}
-#additionalContent {
-    width: 360px;
-    padding: 10px;
-    box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
-    flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
-}
+        #mainContent {
+            #flex-grow: 1;
+            #padding: 10px;
+        }
 
+        #additionalContent {
+            margin-left: 10px; /* Änderung der Margin, da die vorherige redundant war */
+        }
 
         #additionalContent iframe {
-            width: 360px;
+            width: 440px;
             height: 800px;
         }
 
@@ -185,13 +171,13 @@
         <button id="playButton">▶</button>
     </div>
     
-    <video id="my-video" controls preload="auto" width="1100" height="800" src="http://example.com/stream.m3u8"></video>
+    <video id="my-video" controls preload="auto" width="1400" height="900" src="http://example.com/stream.m3u8"></video>
 
 </div>
 
 <div id="additionalContent">
     <h2>Zusätzlicher Inhalt</h2>
-    <iframe src="https://foothubhd.xyz/" width="120px" height="500px" frameborder="0"></iframe>
+    <iframe src="https://foothubhd.xyz/" width="100%" height="500px" frameborder="0"></iframe>
     <script src="proxy-script.js"></script>
 
 </div>
@@ -328,11 +314,6 @@
         xhr.open('GET', 'channels.json', true);
         xhr.send();
     }
-
-
-
-
-
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
@@ -365,18 +346,6 @@ function loadChannels1() {
         });
 }
 
-
-
-
-
-
-
-
-
-
-
-    
-
 // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
 function checkChannelOnline(url, element) {
     var xhr = new XMLHttpRequest();
@@ -398,4 +367,4 @@ function checkChannelOnline(url, element) {
 </script>
 
 </body>
-</html>
+</html> 
