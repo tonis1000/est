@@ -17,16 +17,15 @@
             font-family: Arial, sans-serif;
         }
 
-        #sidebar {
-            width: 230px;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px; /* Hier habe ich die linke und rechte Innenpolsterung auf 20px erhöht */
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            flex-direction: column;
-            margin-right: 10px;
-    overflow-y: auto; /* Erlaubt das Scrollen der Kanalliste, wenn sie zu lang ist */
-    max-height: calc(100vh - 50px); /* Begrenzt die maximale Höhe der Kanalliste auf die Bildschirmhöhe abzüglich einer festen Höhe für andere Elemente (z. B. Kopfzeile) */
+       #sidebar {
+    width: 230px;
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0; /* Sidebar wird nicht verkleinert */
+    overflow-y: auto;
+    max-height: calc(100vh - 50px);
 }
         #channelList {
             list-style: none;
@@ -77,14 +76,18 @@
             border-radius: 50%;
         }
 
-        #mainContent {
-            #flex-grow: 1;
-            #padding: 10px;
+#mainContent {
+    flex-grow: 0;
+    padding: 10px;
+}
         }
 
-        #additionalContent {
-            margin-left: 10px; /* Änderung der Margin, da die vorherige redundant war */
-        }
+#additionalContent {
+    width: 440px;
+    padding: 10px;
+    box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
+    flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
+}
 
         #additionalContent iframe {
             width: 440px;
