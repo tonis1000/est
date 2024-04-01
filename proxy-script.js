@@ -14,4 +14,3 @@ async function makeProxyRequest(url) {
     throw error; // Fehler weiterleiten
   }
 }
-
