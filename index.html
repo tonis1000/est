@@ -10,7 +10,10 @@
         <!-- Laden des proxy-script.js -->
     <script src="proxy-script.js"></script>
 
-    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+        <meta http-equiv="Access-Control-Allow-Origin" content="*" />
+    
+    <!-- Content-Security-Policy für das Zulassen gemischter Inhalte -->
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     
     <style>
         body {
