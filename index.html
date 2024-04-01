@@ -250,7 +250,11 @@
         var channelList = document.getElementById('channelList');
         var hls = new Hls();
 
-        function playChannel(url, channelName) {
+        
+        
+            // Definition der playChannel-Funktion
+    window.playChannel = function(url, channelName) {
+   
             currentChannelNameElement.textContent = channelName;
             currentChannelLinkElement.value = url;
 
@@ -263,7 +267,10 @@
 
             videoElement.play(); // Direkt abspielen
         }
+           
 
+
+        
         function addClickListeners() {
             var channelListItems = document.querySelectorAll('#channelList li');
             channelListItems.forEach(function (item) {
@@ -290,7 +297,8 @@
             xhr.send();
         }
 
-        function checkOnlineStatus() {
+            // Definition der checkOnlineStatus-Funktion
+    window.checkOnlineStatus = function() {
             var channelListItems = document.querySelectorAll('#channelList li');
             channelListItems.forEach(function (item) {
                 var channelUrl = item.getAttribute('data-url');
