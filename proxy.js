@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const fetch = require('node-fetch'); // Erforderliches Modul hinzufügen
 
 const app = express();
 
@@ -11,6 +12,9 @@ app.get('/proxy', async (req, res) => {
   try {
     const url = req.query.url;
     const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch URL');
+    }
     const data = await response.text();
     res.send(data);
   } catch (error) {
