@@ -340,22 +340,36 @@
         checkOnlineStatus();
     });
 
+
+
 function loadChannels() {
-    // Der XMLHttpRequest wird nicht benötigt, da die Kanäle direkt in der HTML definiert sind
-    var channelList = document.getElementById('channelList');
-    var channels = channelList.getElementsByTagName('li');
-    for (var i = 0; i < channels.length; i++) {
-        var channel = channels[i];
-        var channelName = channel.textContent;
-        var channelUrl = channel.getAttribute('data-url');
-        console.log("Channel Name: " + channelName + ", URL: " + channelUrl);
-        // Hier können Sie den Kanalnamen und die URL verwenden, um weitere Aktionen auszuführen, z.B. das Hinzufügen von Event-Listenern oder das Aktualisieren der Anzeige.
-    }
-    
-    addClickListeners(); // Event-Listener hinzufügen
-    checkOnlineStatus(); // Online-Status überprüfen
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            var data = JSON.parse(xhr.responseText);
+            var channelList = document.getElementById('channelList');
+            channelList.innerHTML = ''; // Vorhandene Liste löschen
+            data.forEach(function (channel) {
+                var li = document.createElement('li');
+                li.textContent = channel.name;
+                li.setAttribute('data-url', channel.url);
+                // Beispiel für Hinzufügen einer Klasse
+                li.classList.add('channel-item');
+                channelList.appendChild(li);
+            });
+            addClickListeners(); // Event-Listener hinzufügen
+            checkOnlineStatus(); // Online-Status überprüfen
+        }
+    };
+    // Beispiel für asynchrone Anforderung
+    xhr.open('GET', 'channels.json', true);
+    // Beispiel für Header-Einstellung
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send();
 }
 
+
+    
 
     function loadChannels1() {
         const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
