@@ -13,9 +13,12 @@ async function makeProxyRequest(url) {
   }
 }
 
-// Beispielaufruf der Proxy-Funktion
-const proxyURL = 'https://raw.githubusercontent.com/tonis1000/atonis/master/proxy.php';
-makeProxyRequest(proxyURL)
+// Proxy-URL relativ zum aktuellen Verzeichnis
+const proxyURL = 'proxy.php'; // Annahme: Der Proxy befindet sich im selben Verzeichnis wie Ihre Webseite
+
+// Beispielaufruf der Proxy-Funktion für eine HTTP-Quelle
+const httpURL = 'http://example.com/some/resource'; // Beispiel-HTTP-URL
+makeProxyRequest(proxyURL + '?url=' + encodeURIComponent(httpURL))
   .then(data => {
     console.log('Proxy response:', data);
     // Hier kannst du die erhaltenen Daten verarbeiten
