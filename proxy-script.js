@@ -6,23 +6,12 @@ async function makeProxyRequest(url) {
     if (!response.ok) {
       throw new Error('Network response was not ok');
     }
-    return await response.json(); // Die Daten als JSON zurückgeben
+    const responseData = await response.text(); // Response-Text abrufen
+    console.log('Response data:', responseData); // Ausgabe des Response-Texts zur Überprüfung
+    return JSON.parse(responseData); // Die Daten als JSON zurückgeben
   } catch (error) {
     console.error('Proxy request failed:', error);
     throw error; // Fehler weiterleiten
   }
 }
 
-// Proxy-URL relativ zum aktuellen Verzeichnis
-const proxyURL = 'proxy.php'; // Annahme: Der Proxy befindet sich im selben Verzeichnis wie Ihre Webseite
-
-// Beispielaufruf der Proxy-Funktion für eine HTTP-Quelle
-const httpURL = 'http://example.com/some/resource'; // Beispiel-HTTP-URL
-makeProxyRequest(proxyURL + '?url=' + encodeURIComponent(httpURL))
-  .then(data => {
-    console.log('Proxy response:', data);
-    // Hier kannst du die erhaltenen Daten verarbeiten
-  })
-  .catch(error => {
-    console.error('Proxy request failed:', error);
-  });
