@@ -390,6 +390,15 @@
             });
     }
 
+
+    // Rufe checkOnlineStatus auf, wenn das Dokument vollständig geladen ist
+    window.onload = function() {
+        checkOnlineStatus();
+    };
+
+
+
+    
     // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
     function checkChannelOnline(url, element) {
         var xhr = new XMLHttpRequest();
@@ -406,6 +415,6 @@
 
     // Aktualisiere die Online-Status-Funktion alle 1 Minute
     setInterval(checkOnlineStatus, 60000); // 60000 Millisekunden entsprechen 1 Minute</script>
-
+<script>
 </body>
 </html>
