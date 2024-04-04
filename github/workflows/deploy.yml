@@ -1,4 +1,4 @@
-name: Generate EPG
+name: Deploy
 
 on:
   push:
@@ -6,31 +6,42 @@ on:
       - master
 
 jobs:
-  generate_epg:
+  deploy:
     runs-on: ubuntu-latest
-    
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v2
-        
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-      
+
       - name: Install dependencies
-        run: pip install requests
+        run: |
+          npm install request
+          npm install express
+          npm install xml-js
+          npm install fs-extra
+          pip install requests
+
+      - name: Run proxy server
+        run: node proxy.js &
       
-      - name: Run Python script
+      - name: Run PHP proxy
+        run: php -S 127.0.0.1:8000 proxy.php &
+
+      - name: Run Python server
+        run: python server.py &
+
+      - name: Wait for servers to start
+        run: sleep 10
+
+      - name: Generate EPG
         run: python main.py
-        
+
       - name: Commit changes
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add epg-tmp.xml
+          git add .
           git commit -m "Update EPG"
-        
+      
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
