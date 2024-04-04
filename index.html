@@ -20,21 +20,18 @@
             font-family: Arial, sans-serif;
         }
 
-        #sidebar {
-            width: 230px;
-            height: 780px;
-            background-color: #333;
-            color: white;
-            padding: 10px 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0; /* Sidebar wird nicht verkleinert */
-            overflow-y: auto;
-           #max-height: calc(100vh - 50px);
-        }
-        /* Die folgende Regel entfernt die Scrollbar für Kanäle, Button und Button1 */
-#sidebar, #channelListButton, #channelListButton1 {
-    overflow: hidden;
+#sidebar {
+    width: 230px;
+    /* height: 780px; */ /* Entfernen oder auf auto setzen */
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0; /* Sidebar wird nicht verkleinert */
+    overflow-y: auto;
+    #max-height: calc(100vh - 50px);
 }
+
 
 
         
