@@ -109,8 +109,9 @@
 
 <div id="sidebar">
     <h2 style="margin-bottom: 10px;">Kanäle</h2>
-    <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
-    <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
+    <button id="channelListButton" style="margin-bottom: 5px; overflow-y: hidden;" onclick="reloadPage()">Kanalliste</button>
+    <button id="channelListButton1" style="overflow-y: hidden;" onclick="loadChannels1()">Kanalliste1</button>
+    <ul id="channelList" style="overflow-y: hidden;">
     <ul id="channelList">
 
         <li data-url="https://88.99.254.101/ert1/mono.m3u8">ERT1</li>
