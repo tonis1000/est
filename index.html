@@ -7,13 +7,11 @@
     
     <!-- Fügen Sie die hls.js-Bibliothek hinzu -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-        <!-- Laden des proxy-script.js -->
     <script src="proxy-script.js"></script>
 
-        <meta http-equiv="Access-Control-Allow-Origin" content="*" />
-    
-    <!-- Content-Security-Policy für das Zulassen gemischter Inhalte -->
+    <!-- Content-Security-Policy Header einfügen -->
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*" />
     
     <style>
         body {
@@ -113,6 +111,7 @@
     <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
     <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
     <ul id="channelList">
+
         <li data-url="https://88.99.254.101/ert1/mono.m3u8">ERT1</li>
 <li data-url="https://88.99.254.101/ert2/mono.m3u8" tvg-id="ERT2.gr" tvg-logo="https://i.imgur.com/nMHKG3A.png">ERT2</li>
         
@@ -183,6 +182,7 @@
 <li data-url="https://d3qg0hadt0dkov.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-3sfgyrfz9zduo-prod/amgtennisus/playlist.m3u8" tvg-id="TENNIS 2" tvg-logo="https://i.imgur.com/8fedub5.png">TENNIS 2</li>
 
 <li data-url="https://tennischannel-intl-samsung-uk.amagi.tv/playlist.m3u8" tvg-id="TENNIS 3" tvg-logo="https://i.imgur.com/8fedub5.png">TENNIS 3</li>
+
     </ul>
 </div>
 
@@ -192,15 +192,14 @@
         <input type="text" id="currentChannelLink" />
         <button id="playButton">▶</button>
     </div>
-    
-    <video id="my-video" controls preload="auto" width="1400" height="900" src=""></video>
 
+    <video id="my-video" controls preload="auto" width="1400" height="900"></video>
 </div>
 
 <div id="additionalContent">
     <h2>Zusätzlicher Inhalt</h2>
     <iframe src="https://foothubhd.xyz/" width="100%" height="500px" frameborder="0"></iframe>
-
+   
 </div>
 
 <script>
@@ -209,43 +208,26 @@
     }
 
     // Definition der playChannel-Funktion
-   window.playChannel = function(url, channelName) {
-    var videoElement = document.getElementById('my-video');
-    var currentChannelNameElement = document.getElementById('currentChannelName');
-    var currentChannelLinkElement = document.getElementById('currentChannelLink');
-    var hls = new Hls();
+    window.playChannel = function(url, channelName) {
+        var videoElement = document.getElementById('my-video');
+        var currentChannelNameElement = document.getElementById('currentChannelName');
+        var currentChannelLinkElement = document.getElementById('currentChannelLink');
+        var hls = new Hls();
 
-    currentChannelNameElement.textContent = channelName;
-    currentChannelLinkElement.value = url;
+        currentChannelNameElement.textContent = channelName;
+        currentChannelLinkElement.value = url;
 
-    fetch(url, { method: 'HEAD' })
-        .then(response => {
-            if (response.status === 302) {
-                url = response.headers.get('Location'); // Aktualisieren der URL basierend auf der Weiterleitung
-            }
-            if (Hls.isSupported()) {
-                hls.loadSource(url);
-                hls.attachMedia(videoElement);
-                hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                    videoElement.play();
-                });
-            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = url;
-                videoElement.addEventListener('loadedmetadata', function () {
-                    videoElement.play();
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Fehler beim Laden des Kanals:', error);
-        });
-};
+        if (Hls.isSupported()) {
+            hls.loadSource(url);
+            hls.attachMedia(videoElement);
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            videoElement.src = url;
+        }
 
+        videoElement.play(); // Direkt abspielen
+    };
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Hier werden die Kanäle dynamisch geladen
-        loadChannels();
-
         var videoElement = document.getElementById('my-video');
         var currentChannelNameElement = document.getElementById('currentChannelName');
         var currentChannelLinkElement = document.getElementById('currentChannelLink');
@@ -253,11 +235,7 @@
         var channelList = document.getElementById('channelList');
         var hls = new Hls();
 
-        
-        
-            // Definition der playChannel-Funktion
-    window.playChannel = function(url, channelName) {
-   
+        function playChannel(url, channelName) {
             currentChannelNameElement.textContent = channelName;
             currentChannelLinkElement.value = url;
 
@@ -270,10 +248,7 @@
 
             videoElement.play(); // Direkt abspielen
         }
-           
 
-
-        
         function addClickListeners() {
             var channelListItems = document.querySelectorAll('#channelList li');
             channelListItems.forEach(function (item) {
@@ -300,8 +275,7 @@
             xhr.send();
         }
 
-            // Definition der checkOnlineStatus-Funktion
-    window.checkOnlineStatus = function() {
+        function checkOnlineStatus() {
             var channelListItems = document.querySelectorAll('#channelList li');
             channelListItems.forEach(function (item) {
                 var channelUrl = item.getAttribute('data-url');
@@ -340,94 +314,71 @@
         checkOnlineStatus();
     });
 
+    function loadChannels() {
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var data = JSON.parse(xhr.responseText);
+                var channelList = document.getElementById('channelList');
+                channelList.innerHTML = ''; // Vorhandene Liste löschen
+                data.forEach(function (channel) {
+                    var li = document.createElement('li');
+                    li.textContent = channel.name;
+                    li.setAttribute('data-url', channel.url);
+                    channelList.appendChild(li);
+                });
+                addClickListeners(); // Event-Listener hinzufügen
+                checkOnlineStatus(); // Online-Status überprüfen
+            }
+        };
+        xhr.open('GET', 'channels.json', true);
+        xhr.send();
+    }
 
+function loadChannels1() {
+    const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
 
-function loadChannels() {
+    fetch(playlistURL)
+        .then(response => response.text())
+        .then(data => {
+            const lines = data.split('\n');
+            const channelList = document.getElementById('channelList');
+            channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
+            lines.forEach(line => {
+                if (line.startsWith('#EXTINF:')) {
+                    const [, title] = line.split(',');
+                    const channelName = title.split('(')[0].trim();
+                    const channelURL = lines[lines.indexOf(line) + 1].trim();
+                    const channelItem = document.createElement('li');
+                    channelItem.textContent = channelName;
+                    channelItem.setAttribute('data-url', channelURL);
+                    channelItem.addEventListener('click', () => playChannel(channelURL, channelName));
+                    channelList.appendChild(channelItem);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Fehler beim Laden der Kanäle:', error);
+        });
+}
+    // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
+function checkChannelOnline(url, element) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var data = JSON.parse(xhr.responseText);
-            var channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Vorhandene Liste löschen
-            data.forEach(function (channel) {
-                var li = document.createElement('li');
-                li.textContent = channel.name;
-                li.setAttribute('data-url', channel.url);
-                // Beispiel für Hinzufügen einer Klasse
-                li.classList.add('channel-item');
-                channelList.appendChild(li);
-            });
-            addClickListeners(); // Event-Listener hinzufügen
-            checkOnlineStatus(); // Online-Status überprüfen
+        if (xhr.readyState === 4) {
+            if (xhr.status === 200) {
+                element.classList.add('online'); // Fügen Sie die Klasse 'online' hinzu, wenn der Kanal online ist
+            }
         }
     };
-    // Beispiel für asynchrone Anforderung
-    xhr.open('GET', 'channels.json', true);
-    // Beispiel für Header-Einstellung
-    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.open('HEAD', url, true);
     xhr.send();
 }
 
 
-    
-
-    function loadChannels1() {
-        const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
-
-        fetch(playlistURL)
-            .then(response => response.text())
-            .then(data => {
-                const lines = data.split('\n');
-                const channelList = document.getElementById('channelList');
-                channelList.innerHTML = ''; // Löschen der bestehenden Kanalliste
-                lines.forEach(line => {
-                    if (line.startsWith('#EXTINF:')) {
-                        const [, title] = line.split(',');
-                        const channelName = title.split('(')[0].trim();
-                        const channelURL = lines[lines.indexOf(line) + 1].trim();
-                        const channelItem = document.createElement('li');
-                        channelItem.textContent = channelName;
-                        channelItem.setAttribute('data-url', channelURL);
-                        channelItem.addEventListener('click', function () {
-                            playChannel(channelURL, channelName); // playChannel-Funktion aufrufen
-                        });
-                        channelList.appendChild(channelItem);
-
-                        // Überprüfen und Markieren des Online-Status
-                        checkChannelOnline(channelURL, channelItem);
-                    }
-                });
-            })
-            .catch(error => {
-                console.error('Fehler beim Laden der Kanäle:', error);
-            });
-    }
-
-
-    // Rufe checkOnlineStatus auf, wenn das Dokument vollständig geladen ist
-    window.onload = function() {
-        checkOnlineStatus();
-    };
-
-
-
-    
-    // Überprüfen Sie den Online-Status des Kanals und fügen Sie die Klasse 'online' hinzu, wenn er online ist
-    function checkChannelOnline(url, element) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    element.classList.add('online'); // Fügen Sie die Klasse 'online' hinzu, wenn der Kanal online ist
-                }
-            }
-        };
-        xhr.open('HEAD', url, true);
-        xhr.send();
-    }
-
     // Aktualisiere die Online-Status-Funktion alle 1 Minute
-    setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 0,5 Minute
+    setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 1 Minute
 </script>
+
 </body>
 </html>
