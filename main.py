@@ -1,16 +1,17 @@
-from flask import Flask
 import requests
 import xml.etree.ElementTree as ET
 from xml.sax.saxutils import escape
 from datetime import datetime
 import pytz
+import codecs
 
-app = Flask(__name__)
+# Funktion zum Löschen des Inhalts der Ausgabedatei und Hinzufügen von Text
+def append(text):
+    with codecs.open("epg-tmp.xml", "w", "utf-8") as f:
+        f.write(text + '\n')
 
 # Funktion zum Generieren der Kanalübersicht und Programmzeiten
 def generate_epg(xml_data):
-    epg_output = []
-
     root = ET.fromstring(xml_data)
 
     # Iteriere durch jeden Kanal
@@ -20,45 +21,39 @@ def generate_epg(xml_data):
         for icon in channel.findall('icon'):
             channel_icon = icon.attrib.get('src')
 
-        channel_info = {
-            'id': channel_id,
-            'icon': channel_icon,
-            'programs': []
-        }
+        # Informationen über den Kanal hinzufügen
+        push(channel_id, channel_icon, channel.findall('programme'))
 
-        # Iteriere durch jedes Programm des Kanals
-        for program in channel.findall('programme'):
-            program_info = {}
-            start = datetime.strptime(program.attrib['start'], "%Y%m%d%H%M%S %z").strftime('%Y%m%d%H%M%S %z')
+# Funktion zum Hinzufügen eines Kanals und seiner Programme zur Ausgabedatei
+def push(channel_id, icon, programs):
+    append('<channel id="{}">'.format(channel_id))
+    append('<display-name>{}</display-name>'.format(escape(channel_id)))
+    if icon:
+        append('<icon src="{}"/>'.format(escape(icon)))
+    append('</channel>')
 
-            stop = ''
-            if 'stop' in program.attrib:
-                stop = 'stop="{}"'.format(program.attrib['stop'])
+    # Iteriere durch jedes Programm des Kanals
+    for program in programs:
+        start = datetime.strptime(program.attrib['start'], "%Y%m%d%H%M%S %z").strftime('%Y%m%d%H%M%S %z')
 
-            program_info['start'] = start
-            program_info['title'] = program.find('title').text
-            program_info['desc'] = program.find('desc').text
+        stop = ''
+        if 'stop' in program.attrib:
+            stop = 'stop="{}"'.format(program.attrib['stop'])
 
-            channel_info['programs'].append(program_info)
+        append('<programme start="{}" {} channel="{}">'.format(start, stop, channel_id))
+        append('<title lang="el">{}</title>'.format(escape(program.find('title').text)))
+        append('<desc>{}</desc>'.format(escape(program.find('desc').text)))
+        append('</programme>')
 
-        epg_output.append(channel_info)
+# Abrufen der XML-Daten von der externen URL
+url = "https://github.com/GreekTVApp/epg-greece-cyprus/releases/download/EPG/epg.xml"
+response = requests.get(url)
+if response.status_code == 200:
+    xml_data = response.text
 
-    return epg_output
+    # Generiere die Kanalübersicht
+    generate_epg(xml_data)
 
-# Flask-Endpunkt zum Abrufen der EPG-Daten
-@app.route('/epg')
-def get_epg():
-    url = "https://github.com/GreekTVApp/epg-greece-cyprus/releases/download/EPG/epg.xml"
-    response = requests.get(url)
-    if response.status_code == 200:
-        xml_data = response.text
-
-        # Generiere die Kanalübersicht
-        epg_data = generate_epg(xml_data)
-
-        return {'epg_data': epg_data}, 200
-    else:
-        return {'error': 'Fehler beim Abrufen der XML-Daten'}, response.status_code
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    print("EPG wurde erfolgreich generiert.")
+else:
+    print("Fehler beim Abrufen der XML-Daten:", response.status_code)
