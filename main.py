@@ -5,9 +5,9 @@ from datetime import datetime
 import pytz
 import codecs
 
-# Funktion zum Löschen des Inhalts der Ausgabedatei und Hinzufügen von Text
+# Funktion zum Hinzufügen von Text zur Ausgabedatei
 def append(text):
-    with codecs.open("epg-tmp.xml", "w", "utf-8") as f:
+    with codecs.open("epg-tmp.xml", "a", "utf-8") as f:
         f.write(text + '\n')
 
 # Funktion zum Generieren der Kanalübersicht und Programmzeiten
