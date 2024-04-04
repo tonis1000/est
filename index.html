@@ -1,3 +1,4 @@
+User
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,7 +36,7 @@
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
-            margin: 1px;
+            margin: 1;
         }
 
         #channelList li {
@@ -98,7 +99,34 @@
             height: 720px;
         }
 
-       
+        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+        .online {
+            color: #2EFE64;
+        }
+
+        /* Stil für die Kanäle und Programme */
+        #epg-info {
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+        }
+        .channel {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .channel img {
+            max-width: 100px;
+            margin-right: 10px;
+        }
+        .channel h2 {
+            margin-bottom: 5px;
+        }
+        .program {
+            margin-left: 20px;
+        }
+        .program li {
+            margin-bottom: 5px;
+        }
         
     </style>
 
