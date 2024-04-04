@@ -15,11 +15,9 @@ def generate_epg(xml_data):
     root = ET.fromstring(xml_data)
 
     # Iteriere durch jeden Kanal
-    for channel in root.findall('channel'):
-        channel_id = channel.attrib.get('id')
-        channel_icon = None
-        for icon in channel.findall('icon'):
-            channel_icon = icon.attrib.get('src')
+    for channel in root.findall('.//channel'):
+        channel_id = channel.find('display-name').text
+        channel_icon = channel.find('.//icon').attrib.get('src')
 
         # Informationen über den Kanal hinzufügen
         append('<channel id="{}">'.format(channel_id))
@@ -29,7 +27,7 @@ def generate_epg(xml_data):
         append('</channel>')
 
         # Iteriere durch jedes Programm des Kanals
-        for program in channel.findall('programme'):
+        for program in channel.findall('.//programme'):
             start = datetime.strptime(program.attrib['start'], "%Y%m%d%H%M%S %z").strftime('%Y%m%d%H%M%S %z')
 
             stop = ''
