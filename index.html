@@ -31,11 +31,18 @@
             overflow-y: auto;
            #max-height: calc(100vh - 50px);
         }
+        /* Die folgende Regel entfernt die Scrollbar für Kanäle, Button und Button1 */
+#sidebar, #channelListButton, #channelListButton1 {
+    overflow: hidden;
+}
 
+
+        
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
             margin: 1;
+            overflow-y: auto; /* Hier wird die vertikale Scrollbar aktiviert */
         }
 
         #channelList li {
@@ -109,9 +116,8 @@
 
 <div id="sidebar">
     <h2 style="margin-bottom: 10px;">Kanäle</h2>
-    <button id="channelListButton" style="margin-bottom: 5px; overflow-y: hidden;" onclick="reloadPage()">Kanalliste</button>
-    <button id="channelListButton1" style="overflow-y: hidden;" onclick="loadChannels1()">Kanalliste1</button>
-    <ul id="channelList" style="overflow-y: hidden;">
+    <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
+    <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
     <ul id="channelList">
 
         <li data-url="https://88.99.254.101/ert1/mono.m3u8">ERT1</li>
