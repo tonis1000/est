@@ -20,26 +20,22 @@
             font-family: Arial, sans-serif;
         }
 
-#sidebar {
-    width: 230px;
-    /* height: 780px; */ /* Entfernen oder auf auto setzen */
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-    flex-shrink: 0; /* Sidebar wird nicht verkleinert */
-    overflow-y: auto;
-    #max-height: calc(100vh - 50px);
-}
+        #sidebar {
+            width: 230px;
+            height: 780px;
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0; /* Sidebar wird nicht verkleinert */
+            overflow-y: auto;
+           #max-height: calc(100vh - 50px);
+        }
 
-
-
-        
         #channelList {
             list-style: none;
             padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
             margin: 1;
-            overflow-y: auto; /* Hier wird die vertikale Scrollbar aktiviert */
         }
 
         #channelList li {
