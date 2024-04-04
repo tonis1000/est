@@ -102,6 +102,31 @@
         .online {
             color: #2EFE64;
         }
+
+        /* Stil für die Kanäle und Programme */
+        #epg-info {
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+        }
+        .channel {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .channel img {
+            max-width: 100px;
+            margin-right: 10px;
+        }
+        .channel h2 {
+            margin-bottom: 5px;
+        }
+        .program {
+            margin-left: 20px;
+        }
+        .program li {
+            margin-bottom: 5px;
+        }
+        
     </style>
 
 </head>
@@ -354,6 +379,65 @@ function checkChannelOnline(url, element) {
     // Aktualisiere die Online-Status-Funktion alle 1 Minute
     setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 1 Minute
 </script>
+
+
+
+    <h1>EPG Information</h1>
+
+    <!-- Hier werden die EPG-Informationen angezeigt -->
+    <div id="epg-info">
+        <!-- Die EPG-Informationen werden hier eingefügt -->
+    </div>
+
+    <!-- JavaScript-Code zum Laden und Anzeigen der EPG-Informationen -->
+    <script>
+        // Laden der EPG-Informationen mit JavaScript
+        fetch('epg-tmp.xml')
+            .then(response => response.text())
+            .then(data => {
+                // Verarbeiten der XML-Daten
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(data, "text/xml");
+                const epgInfoDiv = document.getElementById('epg-info');
+                const channels = xmlDoc.querySelectorAll('channel');
+                
+                // Iteration über jeden Kanal und Anzeige seiner Programme
+                channels.forEach(channel => {
+                    const channelId = channel.getAttribute('id');
+                    const displayName = channel.querySelector('display-name').textContent;
+                    const iconSrc = channel.querySelector('icon') ? channel.querySelector('icon').getAttribute('src') : '';
+                    const programs = channel.querySelectorAll('programme');
+                    const channelDiv = document.createElement('div');
+                    channelDiv.classList.add('channel');
+                    channelDiv.innerHTML = `<h2>${displayName}</h2>`;
+                    
+                    // Hinzufügen des Kanalicons
+                    if (iconSrc) {
+                        channelDiv.innerHTML += `<img src="${iconSrc}" alt="${displayName} Icon">`;
+                    }
+                    
+                    // Erstellen einer Liste von Programmen für den Kanal
+                    const programList = document.createElement('ul');
+                    programList.classList.add('program');
+                    programs.forEach(program => {
+                        const title = program.querySelector('title').textContent;
+                        const desc = program.querySelector('desc').textContent;
+                        const start = program.getAttribute('start');
+                        const stop = program.hasAttribute('stop') ? program.getAttribute('stop') : '';
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<strong>${title}</strong> (${start} - ${stop}): ${desc}`;
+                        programList.appendChild(listItem);
+                    });
+                    
+                    // Anhängen der Programmliste an den Kanal
+                    channelDiv.appendChild(programList);
+                    epgInfoDiv.appendChild(channelDiv);
+                });
+            })
+            .catch(error => {
+                console.error('Fehler beim Laden der EPG-Informationen:', error);
+            });
+    </script>
 
 </body>
 </html>
