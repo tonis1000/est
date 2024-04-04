@@ -1,0 +1,16 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Hier folgen weitere Schritte zum Bereitstellen Ihrer Anwendung
+      # Zum Beispiel das Ausführen von Build-Skripten oder das Verschieben von Dateien auf einen Server
