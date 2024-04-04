@@ -1,0 +1,9 @@
+import requests
+
+url = "https://github.com/GreekTVApp/epg-greece-cyprus/releases/download/EPG/epg.xml"
+response = requests.get(url)
+
+if response.status_code == 200:
+    print("Die Quelle funktioniert. Die XML-Daten wurden erfolgreich abgerufen.")
+else:
+    print("Fehler beim Abrufen der XML-Daten. HTTP-Statuscode:", response.status_code)
