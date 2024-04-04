@@ -17,7 +17,13 @@ def generate_epg(xml_data):
     # Iteriere durch jeden Kanal
     for channel in root.findall('.//channel'):
         channel_id = channel.find('display-name').text
-        channel_icon = channel.find('.//icon').attrib.get('src')
+
+        # Überprüfen, ob das 'icon' vorhanden ist
+        icon_element = channel.find('.//icon')
+        if icon_element is not None:
+            channel_icon = icon_element.attrib.get('src')
+        else:
+            channel_icon = None
 
         # Informationen über den Kanal hinzufügen
         append('<channel id="{}">'.format(channel_id))
@@ -45,7 +51,7 @@ response = requests.get(url)
 if response.status_code == 200:
     xml_data = response.text
 
-    # Generiere die Kanalübersicht und Programmzeiten
+    # Generiere die Kanalübersicht
     generate_epg(xml_data)
 
     print("EPG wurde erfolgreich generiert.")
