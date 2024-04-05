@@ -317,6 +317,10 @@ User
 
         addClickListeners();
         checkOnlineStatus();
+
+        
+    // Aktualisiere die Online-Status-Funktion alle 1 Minute
+    setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 30 sekunde
     });
 
     function loadChannels() {
@@ -381,8 +385,6 @@ function checkChannelOnline(url, element) {
 }
 
 
-    // Aktualisiere die Online-Status-Funktion alle 1 Minute
-    setInterval(checkOnlineStatus, 30000); // 30000 Millisekunden entsprechen 1 Minute
 </script>
 
 
