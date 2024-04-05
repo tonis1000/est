@@ -1,4 +1,3 @@
-deploy.yml:
 name: Deploy
 
 on:
@@ -21,8 +20,10 @@ jobs:
           npm install fs-extra
           pip install requests
 
-      - name: Run proxy server
-        run: node proxy.js &
+      - name: Run Node.js proxy server
+        run: |
+          npm install express cors node-fetch
+          node proxy.js &
       
       - name: Run PHP proxy
         run: php -S 127.0.0.1:8000 proxy.php &
