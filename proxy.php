@@ -1,3 +1,4 @@
+proxy.php:
 <?php
 header("Access-Control-Allow-Origin: *"); // Erlaubt den Zugriff von allen Domains
 header("Content-Type: application/json");
