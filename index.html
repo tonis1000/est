@@ -82,8 +82,7 @@
         }
 
         #mainContent {
-            flex-grow: 0;
-            padding: 10px;
+            width: 100%;
         }
 
         #additionalContent {
@@ -103,8 +102,9 @@
             color: #2EFE64;
         }
 
-        /* Stil für die Kanäle und Programme */
+       /* Neuer Stil für die EPG-Informationen */
         #epg-info {
+            width: 100%; /* Die EPG-Informationen nehmen die volle Breite des Hauptinhalts ein */
             font-family: Arial, sans-serif;
             margin-top: 20px;
         }
@@ -204,6 +204,11 @@
     <h2>Zusätzlicher Inhalt</h2>
     <iframe src="https://foothubhd.xyz/" frameborder="0"></iframe>
    
+</div>
+    <!-- EPG-Informationen werden hier eingefügt -->
+<h1>EPG Information</h1>
+<div id="epg-info">
+    <!-- Die EPG-Informationen werden hier eingefügt -->
 </div>
 
 <script>
