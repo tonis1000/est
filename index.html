@@ -16,20 +16,41 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
+            min-height: 100vh;
             margin: 0;
             font-family: Arial, sans-serif;
         }
 
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        main {
+            display: flex;
+            flex: 1;
+        }
+
         #sidebar {
             width: 230px;
-            height: 780px;
             background-color: #333;
             color: white;
             padding: 10px 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             flex-shrink: 0; /* Sidebar wird nicht verkleinert */
             overflow-y: auto;
-           #max-height: calc(100vh - 50px);
+            max-height: calc(100vh - 50px);
         }
 
         #channelList {
@@ -53,9 +74,6 @@
             font-size: 28px;
             display: flex;
             align-items: center;
-            position: fixed;
-            top: 0;
-            width: 100%;
         }
 
         #currentChannelName {
@@ -82,7 +100,10 @@
         }
 
         #mainContent {
-            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            padding: 10px;
         }
 
         #additionalContent {
@@ -97,40 +118,43 @@
             height: 720px;
         }
 
-        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
-        .online {
-            color: #2EFE64;
+        #epg-info {
+            margin-top: 20px;
+            padding: 10px;
+            flex-grow: 1;
+            overflow-y: auto;
         }
 
-       /* Neuer Stil für die EPG-Informationen */
-        #epg-info {
-            width: 100%; /* Die EPG-Informationen nehmen die volle Breite des Hauptinhalts ein */
-            font-family: Arial, sans-serif;
-            margin-top: 20px;
-        }
         .channel {
             border-bottom: 1px solid #ccc;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+
         .channel img {
             max-width: 100px;
             margin-right: 10px;
         }
+
         .channel h2 {
             margin-bottom: 5px;
         }
+
         .program {
             margin-left: 20px;
         }
+
         .program li {
             margin-bottom: 5px;
         }
-                /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+
         .online {
             color: #2EFE64;
         }
-        
+
+        .offline {
+            color: #FF6347;
+        }
     </style>
 
 </head>
