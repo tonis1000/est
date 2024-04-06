@@ -13,8 +13,7 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta http-equiv="Access-Control-Allow-Origin" content="*" />
     
-
-        <style>
+    <style>
         body {
             display: flex;
             margin: 0;
@@ -30,7 +29,7 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             flex-shrink: 0; /* Sidebar wird nicht verkleinert */
             overflow-y: auto;
-            #max-height: calc(100vh - 50px);
+           #max-height: calc(100vh - 50px);
         }
 
         #channelList {
@@ -99,6 +98,11 @@
             height: 720px;
         }
 
+        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+        .online {
+            color: #2EFE64;
+        }
+
         /* Stil für die Kanäle und Programme */
         #epg-info {
             font-family: Arial, sans-serif;
@@ -122,9 +126,12 @@
         .program li {
             margin-bottom: 5px;
         }
+                /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+        .online {
+            color: #2EFE64;
+        }
+        
     </style>
-
-    
 
 </head>
 <body>
