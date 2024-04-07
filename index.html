@@ -80,6 +80,17 @@
             font-size: 20px;
             border-radius: 50%;
         }
+        #subtitleButton {
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            background-color: #2196F3;
+            border: none;
+            color: white;
+            font-size: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
 
         #mainContent {
             flex-grow: 0;
@@ -198,7 +209,9 @@
     </div>
 
     <video id="my-video" controls preload="auto" width="1000" height="690"></video>
+    <button id="subtitleButton" onclick="toggleSubtitles()">Untertitel</button>
 </div>
+
 
 <div id="additionalContent">
     <h2>Zusätzlicher Inhalt</h2>
@@ -207,6 +220,61 @@
 </div>
 
 <script>
+
+
+var subtitles = null;
+var subtitlesEnabled = false;
+
+var video = document.getElementById('video');
+
+function toggleSubtitles() {
+    if (subtitlesEnabled) {
+        subtitles = null;
+        video.textTracks[0].mode = 'hidden';
+        subtitlesEnabled = false;
+    } else {
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = '.srt';
+        fileInput.onchange = function (event) {
+            var file = event.target.files[0];
+            if (file) {
+                var reader = new FileReader();
+                reader.onload = function (event) {
+                    subtitles = event.target.result;
+                    loadSubtitles(subtitles);
+                };
+                reader.readAsText(file);
+            }
+        };
+        fileInput.click();
+    }
+}
+
+function loadSubtitles(subtitles) {
+    var track = video.addTextTrack('subtitles', 'Untertitel', 'de');
+    var cues = parseSrt(subtitles);
+    for (var i = 0; i < cues.length; i++) {
+        var cue = cues[i];
+        track.addCue(new VTTCue(cue.start, cue.end, cue.text));
+    }
+    track.mode = 'showing';
+    subtitlesEnabled = true;
+}
+
+function parseSrt(srt) {
+    // Implementierung des SRT-Parsers
+}
+
+
+
+
+
+
+
+
+
+    
     function reloadPage() {
         location.reload();
     }
