@@ -228,7 +228,12 @@
 <script>
 
 
-const videoPlayer = document.getElementById('videoPlayer');
+
+
+
+
+    <script>
+        const videoPlayer = document.getElementById('videoPlayer');
         const playButton = document.getElementById('playButton');
         const subtitleButton = document.getElementById('subtitleButton');
         const subtitleInput = document.getElementById('subtitleInput');
@@ -280,57 +285,6 @@ const videoPlayer = document.getElementById('videoPlayer');
                 playButton.textContent = 'Play';
             }
         });
-
-
-
-    
-
-
-var subtitles = null;
-var subtitlesEnabled = false;
-
-var video = document.getElementById('video');
-
-function toggleSubtitles() {
-    if (subtitlesEnabled) {
-        subtitles = null;
-        video.textTracks[0].mode = 'hidden';
-        subtitlesEnabled = false;
-    } else {
-        var fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.srt';
-        fileInput.onchange = function (event) {
-            var file = event.target.files[0];
-            if (file) {
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    subtitles = event.target.result;
-                    loadSubtitles(subtitles);
-                };
-                reader.readAsText(file);
-            }
-        };
-        fileInput.click();
-    }
-}
-
-function loadSubtitles(subtitles) {
-    var track = video.addTextTrack('subtitles', 'Untertitel', 'de');
-    var cues = parseSrt(subtitles);
-    for (var i = 0; i < cues.length; i++) {
-        var cue = cues[i];
-        track.addCue(new VTTCue(cue.start, cue.end, cue.text));
-    }
-    track.mode = 'showing';
-    subtitlesEnabled = true;
-}
-
-function parseSrt(srt) {
-    // Implementierung des SRT-Parsers
-}
-
-
 
 
 
