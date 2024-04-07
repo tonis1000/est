@@ -92,6 +92,10 @@
             margin-right: 10px;
         }
 
+        #subtitleInput {
+            display: none;
+        }
+
         #mainContent {
             flex-grow: 0;
             padding: 10px;
@@ -207,6 +211,7 @@
         <input type="text" id="currentChannelLink" />
         <button id="playButton">▶</button>
         <button id="subtitleButton" onclick="toggleSubtitles()">Untertitel</button>
+        <input type="file" id="subtitleInput" accept=".srt">
     </div>
 
     <video id="my-video" controls preload="auto" width="1000" height="690"></video>
@@ -221,6 +226,64 @@
 </div>
 
 <script>
+
+
+const videoPlayer = document.getElementById('videoPlayer');
+        const playButton = document.getElementById('playButton');
+        const subtitleButton = document.getElementById('subtitleButton');
+        const subtitleInput = document.getElementById('subtitleInput');
+
+        let subtitles = [];
+
+        subtitleButton.addEventListener('click', () => {
+            subtitleInput.click();
+        });
+
+        subtitleInput.addEventListener('change', () => {
+            const file = subtitleInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const content = event.target.result;
+                parseSubtitles(content);
+            };
+            reader.readAsText(file);
+        });
+
+        function parseSubtitles(content) {
+            // Hier implementieren Sie den Code zum Parsen der Untertiteldatei (z.B. .srt) und speichern die Untertitel in der Variable "subtitles"
+            // Beispiel: subtitles = parseSRT(content);
+            // parseSRT ist eine Funktion, die die Untertiteldatei im SRT-Format parsen kann
+        }
+
+        // Funktion zur Anpassung der Untertitelzeitstempel
+        function adjustSubtitleTimestamps(startOffset, endOffset) {
+            subtitles.forEach(subtitle => {
+                subtitle.startTime += startOffset;
+                subtitle.endTime += endOffset;
+            });
+            // Hier Code hinzufügen, um die aktualisierten Untertitel im Video-Player anzuzeigen
+        }
+
+        // Funktion zur automatischen Synchronisierung der Untertitel
+        function autoSyncSubtitles() {
+            // Hier implementieren Sie den Code für die automatische Synchronisierung der Untertitel
+            // Beispiel: Verwenden Sie Audio- oder Texterkennungsalgorithmen, um die Untertitel automatisch zu synchronisieren
+        }
+
+        // Event-Listener für den Play-Button
+        playButton.addEventListener('click', () => {
+            if (videoPlayer.paused || videoPlayer.ended) {
+                videoPlayer.play();
+                playButton.textContent = 'Pause';
+            } else {
+                videoPlayer.pause();
+                playButton.textContent = 'Play';
+            }
+        });
+
+
+
+    
 
 
 var subtitles = null;
