@@ -13,6 +13,7 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta http-equiv="Access-Control-Allow-Origin" content="*" />
     
+
     <style>
         body {
             display: flex;
@@ -29,7 +30,7 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             flex-shrink: 0; /* Sidebar wird nicht verkleinert */
             overflow-y: auto;
-           #max-height: calc(100vh - 50px);
+           max-height: calc(100vh - 50px); /* max-height anstatt #max-height */
         }
 
         #channelList {
@@ -148,6 +149,8 @@
         
     </style>
 
+    
+
 </head>
 <body>
 
@@ -207,15 +210,12 @@
 
 <div id="mainContent">
     <div id="currentChannel">
-        <span id="currentChannelName">-</span>
-        <input type="text" id="currentChannelLink" />
-        <button id="playButton">▶</button>
-        <button id="subtitleButton" onclick="toggleSubtitles()">Untertitel</button>
-        <input type="file" id="subtitleInput" accept=".srt">
+        <span id="currentChannelName">Kein Kanal ausgewählt</span>
+        <button id="playButton" onclick="togglePlay()">&#9658;</button>
     </div>
-
-    <video id="my-video" controls preload="auto" width="1000" height="690"></video>
-    
+    <video id="video" controls></video>
+    <button id="subtitleButton" onclick="toggleSubtitle()">CC</button>
+    <input type="file" id="subtitleInput" onchange="loadSubtitle(event)">
 </div>
 
 
