@@ -242,6 +242,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Define variables
         var videoElement = document.getElementById('my-video');
         var currentChannelNameElement = document.getElementById('currentChannelName');
         var currentChannelLinkElement = document.getElementById('currentChannelLink');
@@ -249,6 +250,7 @@
         var channelList = document.getElementById('channelList');
         var hls = new Hls();
 
+        // Function to play a channel
         function playChannel(url, channelName) {
             currentChannelNameElement.textContent = channelName;
             currentChannelLinkElement.value = url;
@@ -260,8 +262,58 @@
                 videoElement.src = url;
             }
 
-            videoElement.play(); // Direkt abspielen
+            videoElement.play();
         }
+
+        // Function to load EPG information
+        function loadEPG() {
+            fetch('epg-tmp.xml')
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(data, "text/xml");
+                    const epgInfoDiv = document.getElementById('epg-info');
+                    const channels = xmlDoc.querySelectorAll('channel');
+
+                    epgInfoDiv.innerHTML = ''; // Clear existing EPG info
+
+                    channels.forEach(channel => {
+                        const channelId = channel.getAttribute('id');
+                        const displayName = channel.querySelector('display-name').textContent;
+                        const iconSrc = channel.querySelector('icon') ? channel.querySelector('icon').getAttribute('src') : '';
+                        const programs = channel.querySelectorAll('programme');
+                        const channelDiv = document.createElement('div');
+                        channelDiv.classList.add('channel');
+                        channelDiv.innerHTML = `<h2>${displayName}</h2>`;
+
+                        if (iconSrc) {
+                            channelDiv.innerHTML += `<img src="${iconSrc}" alt="${displayName} Icon">`;
+                        }
+
+                        const programList = document.createElement('ul');
+                        programList.classList.add('program');
+                        programs.forEach(program => {
+                            const title = program.querySelector('title').textContent;
+                            const desc = program.querySelector('desc').textContent;
+                            const start = program.getAttribute('start');
+                            const stop = program.hasAttribute('stop') ? program.getAttribute('stop') : '';
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `<strong>${title}</strong> (${start} - ${stop}): ${desc}`;
+                            programList.appendChild(listItem);
+                        });
+
+                        channelDiv.appendChild(programList);
+                        epgInfoDiv.appendChild(channelDiv);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading EPG information:', error);
+                });
+        }
+
+        // Call the function to load EPG information
+        loadEPG();
+    });
 
         function addClickListeners() {
             var channelListItems = document.querySelectorAll('#channelList li');
