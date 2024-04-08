@@ -13,7 +13,6 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta http-equiv="Access-Control-Allow-Origin" content="*" />
     
-
     <style>
         body {
             display: flex;
@@ -30,7 +29,7 @@
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
             flex-shrink: 0; /* Sidebar wird nicht verkleinert */
             overflow-y: auto;
-           max-height: calc(100vh - 50px); /* max-height anstatt #max-height */
+           #max-height: calc(100vh - 50px);
         }
 
         #channelList {
@@ -80,21 +79,6 @@
             color: white;
             font-size: 20px;
             border-radius: 50%;
-        }
-        #subtitleButton {
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            background-color: #2196F3;
-            border: none;
-            color: white;
-            font-size: 20px;
-            border-radius: 50%;
-            margin-right: 10px;
-        }
-
-        #subtitleInput {
-            display: none;
         }
 
         #mainContent {
@@ -148,8 +132,6 @@
         }
         
     </style>
-
-    
 
 </head>
 <body>
@@ -210,14 +192,13 @@
 
 <div id="mainContent">
     <div id="currentChannel">
-        <span id="currentChannelName">Kein Kanal ausgewählt</span>
-        <button id="playButton" onclick="togglePlay()">&#9658;</button>
+        <span id="currentChannelName">-</span>
+        <input type="text" id="currentChannelLink" />
+        <button id="playButton">▶</button>
     </div>
-    <video id="video" controls></video>
-    <button id="subtitleButton" onclick="toggleSubtitle()">CC</button>
-    <input type="file" id="subtitleInput" onchange="loadSubtitle(event)">
-</div>
 
+    <video id="my-video" controls preload="auto" width="1000" height="690"></video>
+</div>
 
 <div id="additionalContent">
     <h2>Zusätzlicher Inhalt</h2>
@@ -226,73 +207,6 @@
 </div>
 
 <script>
-
-
-
-
-
-
-
-        const videoPlayer = document.getElementById('videoPlayer');
-        const playButton = document.getElementById('playButton');
-        const subtitleButton = document.getElementById('subtitleButton');
-        const subtitleInput = document.getElementById('subtitleInput');
-
-        let subtitles = [];
-
-        subtitleButton.addEventListener('click', () => {
-            subtitleInput.click();
-        });
-
-        subtitleInput.addEventListener('change', () => {
-            const file = subtitleInput.files[0];
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const content = event.target.result;
-                parseSubtitles(content);
-            };
-            reader.readAsText(file);
-        });
-
-        function parseSubtitles(content) {
-            // Hier implementieren Sie den Code zum Parsen der Untertiteldatei (z.B. .srt) und speichern die Untertitel in der Variable "subtitles"
-            // Beispiel: subtitles = parseSRT(content);
-            // parseSRT ist eine Funktion, die die Untertiteldatei im SRT-Format parsen kann
-        }
-
-        // Funktion zur Anpassung der Untertitelzeitstempel
-        function adjustSubtitleTimestamps(startOffset, endOffset) {
-            subtitles.forEach(subtitle => {
-                subtitle.startTime += startOffset;
-                subtitle.endTime += endOffset;
-            });
-            // Hier Code hinzufügen, um die aktualisierten Untertitel im Video-Player anzuzeigen
-        }
-
-        // Funktion zur automatischen Synchronisierung der Untertitel
-        function autoSyncSubtitles() {
-            // Hier implementieren Sie den Code für die automatische Synchronisierung der Untertitel
-            // Beispiel: Verwenden Sie Audio- oder Texterkennungsalgorithmen, um die Untertitel automatisch zu synchronisieren
-        }
-
-        // Event-Listener für den Play-Button
-        playButton.addEventListener('click', () => {
-            if (videoPlayer.paused || videoPlayer.ended) {
-                videoPlayer.play();
-                playButton.textContent = 'Pause';
-            } else {
-                videoPlayer.pause();
-                playButton.textContent = 'Play';
-            }
-        });
-
-
-
-
-
-
-
-    
     function reloadPage() {
         location.reload();
     }
