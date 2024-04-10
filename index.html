@@ -197,13 +197,19 @@
         <button id="playButton">▶</button>
     </div>
 
+    <!-- Video-Player mit Untertitel- und Audiosprachensteuerung -->
     <video id="my-video" controls preload="auto" width="1000" height="690"></video>
-</div>
-
-<div id="additionalContent">
-    <h2>Zusätzlicher Inhalt</h2>
-    <iframe src="https://foothubhd.xyz/" frameborder="0"></iframe>
-   
+    
+    <!-- Steuerelemente für Untertitel und Audiosprachen -->
+    <div id="controls">
+        <label for="subtitle-select">Untertitel:</label>
+        <select id="subtitle-select">
+            <option value="none">Keine</option>
+            <option value="subtitles_en">Englisch</option>
+            <option value="subtitles_de">Deutsch</option>
+            <option value="subtitles_gr">Griechisch</option>
+        </select>
+    </div>
 </div>
 
 <script>
@@ -384,7 +390,6 @@ function checkChannelOnline(url, element) {
 }
 
 
-</script>
 
 
 
@@ -443,7 +448,33 @@ function checkChannelOnline(url, element) {
             .catch(error => {
                 console.error('Fehler beim Laden der EPG-Informationen:', error);
             });
-    </script>
+    // JavaScript-Funktionen hier einfügen, um Untertitel und Audiosprachen zu steuern
+    
+    // Funktion zum Laden von Untertiteln basierend auf der ausgewählten Sprache
+    function loadSubtitle() {
+        var video = document.getElementById('my-video');
+        var select = document.getElementById('subtitle-select');
+        var subtitleURL = select.value;
+        
+        if (subtitleURL === 'none') {
+            video.textTracks[0].mode = 'hidden'; // Ausblenden, wenn keine Untertitel ausgewählt sind
+        } else {
+            var track = document.createElement('track');
+            track.kind = 'subtitles';
+            track.label = select.options[select.selectedIndex].text;
+            track.srclang = 'en'; // Sprachcode, hier vorerst auf Englisch gesetzt
+            track.src = subtitleURL;
+            track.addEventListener('load', function() {
+                this.mode = 'showing'; // Zeige Untertitel, wenn sie geladen sind
+            });
+            video.appendChild(track);
+        }
+    }
+    
+    // Event-Listener für Änderungen an der Untertitelauswahl hinzufügen
+    document.getElementById('subtitle-select').addEventListener('change', loadSubtitle);
+</script>
 
+    
 </body>
 </html>
