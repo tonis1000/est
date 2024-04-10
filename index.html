@@ -81,6 +81,23 @@
             border-radius: 50%;
         }
 
+               #controls {
+            display: flex;
+            align-items: center;
+            margin-right: 20px; /* Abstand zum rechten Rand hinzufügen */
+        }
+
+        #subtitle-upload {
+            display: flex;
+            align-items: center;
+        }
+
+        #subtitle-upload label,
+        #subtitle-upload input {
+            margin-right: 10px; /* Abstand zwischen Label und Input hinzufügen */
+        }
+
+        
         #mainContent {
             flex-grow: 0;
             padding: 10px;
@@ -192,24 +209,31 @@
 
 <div id="mainContent">
     <div id="currentChannel">
-        <span id="currentChannelName">-</span>
-        <input type="text" id="currentChannelLink" />
-        <button id="playButton">▶</button>
+        <span id="currentChannelName">Kanal:</span>
+        <input type="text" id="channelInput" placeholder="Kanalnummer">
+        <button id="playButton" onclick="loadChannel()">▶</button>
+        <div id="controls">
+            <!-- Steuerelemente für Untertitel und Audiosprachen -->
+            <label for="subtitle-select">Untertitel:</label>
+            <select id="subtitle-select">
+                <option value="none">Keine</option>
+                <option value="subtitles_en">Englisch</option>
+                <option value="subtitles_de">Deutsch</option>
+                <option value="subtitles_gr">Griechisch</option>
+            </select>
+        </div>
+        
+        <!-- Dateiauswahl-Input für Untertitel hinzufügen -->
+        <div id="subtitle-upload">
+            <label for="subtitle-file">Untertiteldatei auswählen:</label>
+            <input type="file" id="subtitle-file" accept=".vtt">
+        </div>
     </div>
-
+    
     <!-- Video-Player mit Untertitel- und Audiosprachensteuerung -->
     <video id="my-video" controls preload="auto" width="1000" height="690"></video>
     
-    <!-- Steuerelemente für Untertitel und Audiosprachen -->
-    <div id="controls">
-        <label for="subtitle-select">Untertitel:</label>
-        <select id="subtitle-select">
-            <option value="none">Keine</option>
-            <option value="subtitles_en">Englisch</option>
-            <option value="subtitles_de">Deutsch</option>
-            <option value="subtitles_gr">Griechisch</option>
-        </select>
-    </div>
+    
     
     <h1>EPG Information</h1>
 
@@ -458,7 +482,7 @@ function checkChannelOnline(url, element) {
             });
     // JavaScript-Funktionen hier einfügen, um Untertitel und Audiosprachen zu steuern
     
-    // Funktion zum Laden von Untertiteln basierend auf der ausgewählten Sprache
+    // Funktion zum Laden der Untertiteldatei
     function loadSubtitle() {
         var video = document.getElementById('my-video');
         var select = document.getElementById('subtitle-select');
@@ -481,6 +505,26 @@ function checkChannelOnline(url, element) {
     
     // Event-Listener für Änderungen an der Untertitelauswahl hinzufügen
     document.getElementById('subtitle-select').addEventListener('change', loadSubtitle);
+    
+    // Event-Listener für Änderungen an der ausgewählten Untertiteldatei hinzufügen
+    document.getElementById('subtitle-file').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        var URL = window.URL || window.webkitURL;
+        var fileURL = URL.createObjectURL(file);
+        
+        var track = document.createElement('track');
+        track.kind = 'subtitles';
+        track.label = 'Benutzerdefiniert';
+        track.srclang = 'en'; // Sprachcode, hier vorerst auf Englisch gesetzt
+        track.src = fileURL;
+        track.addEventListener('load', function() {
+            this.mode = 'showing'; // Zeige Untertitel, wenn sie geladen sind
+        });
+        
+        var video = document.getElementById('my-video');
+        video.appendChild(track);
+    });
+    
 </script>
 
     
