@@ -210,6 +210,13 @@
             <option value="subtitles_gr">Griechisch</option>
         </select>
     </div>
+    
+    <h1>EPG Information</h1>
+
+    <!-- Hier werden die EPG-Informationen angezeigt -->
+    <div id="epg-info">
+        <!-- Die EPG-Informationen werden hier eingefügt -->
+    </div>
 </div>
 
 <script>
@@ -393,15 +400,9 @@ function checkChannelOnline(url, element) {
 
 
 
-    <h1>EPG Information</h1>
-
-    <!-- Hier werden die EPG-Informationen angezeigt -->
-    <div id="epg-info">
-        <!-- Die EPG-Informationen werden hier eingefügt -->
-    </div>
 
     <!-- JavaScript-Code zum Laden und Anzeigen der EPG-Informationen -->
-    <script>
+
         // Laden der EPG-Informationen mit JavaScript
         fetch('epg-tmp.xml')
             .then(response => response.text())
