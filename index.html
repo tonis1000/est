@@ -404,10 +404,21 @@ function loadGamesListFromExternalSource() {
         });
 }
 
-function playVideo(url, name) {
-    const videoPlayer = document.getElementById('my-video');
-    videoPlayer.src = url;
-    videoPlayer.play();
+function playVideo(url) {
+    const video = document.getElementById('my-video');
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
+        video.addEventListener('loadedmetadata', function() {
+            video.play();
+        });
+    }
 }
 
 
