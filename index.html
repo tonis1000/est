@@ -139,6 +139,8 @@
     <h2 style="margin-bottom: 10px;">Kanäle</h2>
     <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
     <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
+    <button id="channelListButton2" onclick="loadGamesList()">Kanalliste2</button>
+
     <ul id="channelList">
 
 <li data-url="https://88.99.254.101/ert1/mono.m3u8"><channel id="ert1"><icon src="https://i.imgur.com/nMHKG3A.png" /><display-name>Beispiel ert 1</display-name></channel></li>
@@ -361,6 +363,36 @@
         xhr.open('GET', 'channels.json', true);
         xhr.send();
     }
+function loadGamesList() {
+    fetch('https://foothubhd.xyz/program.txt')
+        .then(response => response.text())
+        .then(data => {
+            // Hier müssen Sie möglicherweise die Daten parse und formatieren
+            // Annahme: die Daten sind in einer einfachen textbasierten Liste
+            const games = data.split('\n'); // Trennt jede Zeile
+            const channelList = document.getElementById('channelList');
+            channelList.innerHTML = ''; // Löscht die aktuelle Liste
+
+            games.forEach(game => {
+                if (game.trim() !== '') { // Überprüft, ob die Zeile nicht leer ist
+                    const li = document.createElement('li');
+                    const [time, gameInfo] = game.split(/ (.+)/); // Teilt die Zeit vom Rest der Information
+                    if (gameInfo) {
+                        const [teams, link] = gameInfo.split(' https://');
+                        li.textContent = `${time} - ${teams}`;
+                        li.setAttribute('data-url', `https://${link}`);
+                        li.addEventListener('click', () => playChannel(`https://${link}`, `${teams}`));
+                    } else {
+                        li.textContent = game; // Nur Text, falls keine URL vorhanden
+                    }
+                    channelList.appendChild(li);
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Fehler beim Laden der Spiele:', error);
+        });
+}
 
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
