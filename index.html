@@ -366,7 +366,7 @@
 
 
 
-    document.getElementById('channelListButton2').addEventListener('click', function() {
+document.getElementById('channelListButton2').addEventListener('click', function() {
     loadGamesListFromExternalSource();
 });
 
@@ -378,13 +378,15 @@ function loadGamesListFromExternalSource() {
         .then(response => response.text())
         .then(data => {
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Clear existing list
+            channelList.innerHTML = ''; // Leere die bestehende Liste
 
             const games = data.split('\n');
             games.forEach(game => {
                 if (game.trim() !== '') {
                     const li = document.createElement('li');
-                    const parts = game.split(' http');
+                    // Entferne das Trennzeichen 'η' und schneide den Rest der Zeile ab
+                    const cleanGame = game.split(' η')[0].trim();
+                    const parts = cleanGame.split(' http');
                     if (parts.length > 1) {
                         const name = parts[0].trim();
                         const url = 'http' + parts[1].trim();
@@ -392,7 +394,7 @@ function loadGamesListFromExternalSource() {
                         li.setAttribute('data-url', url);
                         li.addEventListener('click', () => window.open(url, '_blank'));
                     } else {
-                        li.textContent = game;
+                        li.textContent = cleanGame; // Nur Text, falls keine URL vorhanden
                     }
                     channelList.appendChild(li);
                 }
@@ -402,6 +404,7 @@ function loadGamesListFromExternalSource() {
             console.error('Error loading the games:', error);
         });
 }
+
 
     
 
