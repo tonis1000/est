@@ -384,7 +384,6 @@ function loadGamesListFromExternalSource() {
             games.forEach(game => {
                 if (game.trim() !== '') {
                     const li = document.createElement('li');
-                    // Entferne das Trennzeichen 'η' und schneide den Rest der Zeile ab
                     const cleanGame = game.split(' η')[0].trim();
                     const parts = cleanGame.split(' http');
                     if (parts.length > 1) {
@@ -392,9 +391,9 @@ function loadGamesListFromExternalSource() {
                         const url = 'http' + parts[1].trim();
                         li.textContent = name;
                         li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => window.open(url, '_blank'));
+                        li.addEventListener('click', () => playVideo(url, name));
                     } else {
-                        li.textContent = cleanGame; // Nur Text, falls keine URL vorhanden
+                        li.textContent = cleanGame;
                     }
                     channelList.appendChild(li);
                 }
@@ -404,6 +403,13 @@ function loadGamesListFromExternalSource() {
             console.error('Error loading the games:', error);
         });
 }
+
+function playVideo(url, name) {
+    const videoPlayer = document.getElementById('my-video');
+    videoPlayer.src = url;
+    videoPlayer.play();
+}
+
 
 
     
