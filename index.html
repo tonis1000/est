@@ -363,27 +363,39 @@
         xhr.open('GET', 'channels.json', true);
         xhr.send();
     }
+
 function loadGamesList() {
-    fetch('https://foothubhd.xyz/program.txt')
-        .then(response => response.text())
+    // URL des CORS-Proxies
+    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
+    // Ziel-URL, die Sie abrufen möchten
+    const targetUrl = 'https://foothubhd.xyz/program.txt';
+
+    // Verwenden von Fetch API zum Abrufen der Daten durch den Proxy
+    fetch(corsProxy + targetUrl)
+        .then(response => {
+            if (response.ok) {
+                return response.text();  // Konvertiere die Antwort in Text, wenn der Statuscode erfolgreich ist
+            }
+            throw new Error('Netzwerkantwort war nicht ok.');
+        })
         .then(data => {
-            // Hier müssen Sie möglicherweise die Daten parse und formatieren
-            // Annahme: die Daten sind in einer einfachen textbasierten Liste
-            const games = data.split('\n'); // Trennt jede Zeile
+            // Hier verarbeiten Sie die Daten, die Sie erhalten haben
+            const games = data.split('\n');  // Annahme: Jedes Spiel ist in einer neuen Zeile
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Löscht die aktuelle Liste
+            channelList.innerHTML = '';  // Löschen Sie die aktuelle Liste
 
             games.forEach(game => {
-                if (game.trim() !== '') { // Überprüft, ob die Zeile nicht leer ist
+                if (game.trim() !== '') {
                     const li = document.createElement('li');
-                    const [time, gameInfo] = game.split(/ (.+)/); // Teilt die Zeit vom Rest der Information
-                    if (gameInfo) {
-                        const [teams, link] = gameInfo.split(' https://');
-                        li.textContent = `${time} - ${teams}`;
-                        li.setAttribute('data-url', `https://${link}`);
-                        li.addEventListener('click', () => playChannel(`https://${link}`, `${teams}`));
+                    const parts = game.split(' http');  // Teilt die Zeile in den Namen des Spiels und den Link
+                    if (parts.length > 1) {
+                        const name = parts[0].trim();
+                        const url = 'http' + parts[1].trim();  // Stellen Sie das 'http' wieder her, das gesplittet wurde
+                        li.textContent = name;
+                        li.setAttribute('data-url', url);
+                        li.addEventListener('click', () => playChannel(url, name));
                     } else {
-                        li.textContent = game; // Nur Text, falls keine URL vorhanden
+                        li.textContent = game;  // Nur Text, falls keine URL vorhanden
                     }
                     channelList.appendChild(li);
                 }
@@ -393,6 +405,8 @@ function loadGamesList() {
             console.error('Fehler beim Laden der Spiele:', error);
         });
 }
+
+    
 
 function loadChannels1() {
     const playlistURL = 'https://raw.githubusercontent.com/gluk03/iptvgluk/dd9409c9f9029f6444633267e3031741efedc381/TV.m3u';
