@@ -372,7 +372,7 @@
 
 
 
-    document.getElementById('channelListButton2').addEventListener('click', function() {
+document.getElementById('channelListButton2').addEventListener('click', function() {
     loadGamesListFromExternalSource();
 });
 
@@ -390,6 +390,7 @@ function loadGamesListFromExternalSource() {
             games.forEach(game => {
                 if (game.trim() !== '') {
                     const li = document.createElement('li');
+                    // Entferne das Trennzeichen 'η' und schneide den Rest der Zeile ab
                     const cleanGame = game.split(' η')[0].trim();
                     const parts = cleanGame.split(' http');
                     if (parts.length > 1) {
@@ -397,9 +398,9 @@ function loadGamesListFromExternalSource() {
                         const url = 'http' + parts[1].trim();
                         li.textContent = name;
                         li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => loadHLSVideo(url));
+                        li.addEventListener('click', () => loadVideo(url));
                     } else {
-                        li.textContent = cleanGame;
+                        li.textContent = cleanGame; // Nur Text, falls keine URL vorhanden
                     }
                     channelList.appendChild(li);
                 }
@@ -410,10 +411,10 @@ function loadGamesListFromExternalSource() {
         });
 }
 
-function loadHLSVideo(url) {
-    var video = document.getElementById('my-video');
+function loadVideo(url) {
+    const video = document.getElementById('my-video');
     if (Hls.isSupported()) {
-        var hls = new Hls();
+        const hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
@@ -421,7 +422,7 @@ function loadHLSVideo(url) {
         });
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = url;
-        video.addEventListener('loadedmetadata', function() {
+        video.addEventListener('canplay', function() {
             video.play();
         });
     }
