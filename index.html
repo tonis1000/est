@@ -364,45 +364,42 @@
         xhr.send();
     }
 
-function loadGamesList() {
-    // URL des CORS-Proxies
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-    // Ziel-URL, die Sie abrufen möchten
+
+
+    document.getElementById('channelListButton2').addEventListener('click', function() {
+    loadGamesListFromExternalSource();
+});
+
+function loadGamesListFromExternalSource() {
+    const corsProxy = 'https://api.allorigins.win/raw?url='; // Ein alternativer Proxy
     const targetUrl = 'https://foothubhd.xyz/program.txt';
 
-    // Verwenden von Fetch API zum Abrufen der Daten durch den Proxy
-    fetch(corsProxy + targetUrl)
-        .then(response => {
-            if (response.ok) {
-                return response.text();  // Konvertiere die Antwort in Text, wenn der Statuscode erfolgreich ist
-            }
-            throw new Error('Netzwerkantwort war nicht ok.');
-        })
+    fetch(corsProxy + encodeURIComponent(targetUrl))
+        .then(response => response.text())
         .then(data => {
-            // Hier verarbeiten Sie die Daten, die Sie erhalten haben
-            const games = data.split('\n');  // Annahme: Jedes Spiel ist in einer neuen Zeile
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = '';  // Löschen Sie die aktuelle Liste
+            channelList.innerHTML = ''; // Clear existing list
 
+            const games = data.split('\n');
             games.forEach(game => {
                 if (game.trim() !== '') {
                     const li = document.createElement('li');
-                    const parts = game.split(' http');  // Teilt die Zeile in den Namen des Spiels und den Link
+                    const parts = game.split(' http');
                     if (parts.length > 1) {
                         const name = parts[0].trim();
-                        const url = 'http' + parts[1].trim();  // Stellen Sie das 'http' wieder her, das gesplittet wurde
+                        const url = 'http' + parts[1].trim();
                         li.textContent = name;
                         li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => playChannel(url, name));
+                        li.addEventListener('click', () => window.open(url, '_blank'));
                     } else {
-                        li.textContent = game;  // Nur Text, falls keine URL vorhanden
+                        li.textContent = game;
                     }
                     channelList.appendChild(li);
                 }
             });
         })
         .catch(error => {
-            console.error('Fehler beim Laden der Spiele:', error);
+            console.error('Error loading the games:', error);
         });
 }
 
