@@ -371,14 +371,14 @@ document.getElementById('channelListButton2').addEventListener('click', function
 });
 
 function loadGamesListFromExternalSource() {
-    const corsProxy = 'https://api.allorigins.win/raw?url='; // Ein alternativer Proxy
+    const corsProxy = 'https://api.allorigins.win/raw?url=';
     const targetUrl = 'https://foothubhd.xyz/program.txt';
 
     fetch(corsProxy + encodeURIComponent(targetUrl))
         .then(response => response.text())
         .then(data => {
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Leere die bestehende Liste
+            channelList.innerHTML = '';
 
             const games = data.split('\n');
             games.forEach(game => {
@@ -391,7 +391,7 @@ function loadGamesListFromExternalSource() {
                         const url = 'http' + parts[1].trim();
                         li.textContent = name;
                         li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => playVideo(url, name));
+                        li.addEventListener('click', () => playVideo(url));
                     } else {
                         li.textContent = cleanGame;
                     }
@@ -406,20 +406,21 @@ function loadGamesListFromExternalSource() {
 
 function playVideo(url) {
     const video = document.getElementById('my-video');
-    if (Hls.isSupported()) {
+    if (Hls.isSupported() && url.includes('.m3u8')) {
         const hls = new Hls();
         hls.loadSource(url);
         hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
             video.play();
         });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+    } else if (video.canPlayType('video/mp4').length > 0 && url.includes('.mp4')) {
         video.src = url;
-        video.addEventListener('loadedmetadata', function() {
-            video.play();
-        });
+        video.play();
+    } else {
+        console.error('Format not supported');
     }
 }
+
 
 
 
