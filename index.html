@@ -398,7 +398,7 @@ function loadGamesListFromExternalSource() {
                         const url = 'http' + parts[1].trim();
                         li.textContent = name;
                         li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => window.open(url, '_blank'));
+                        li.addEventListener('click', () => loadVideo(url));
                     } else {
                         li.textContent = cleanGame; // Nur Text, falls keine URL vorhanden
                     }
@@ -410,6 +410,29 @@ function loadGamesListFromExternalSource() {
             console.error('Error loading the games:', error);
         });
 }
+
+function loadVideo(url) {
+    const video = document.getElementById('my-video');
+    if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(url);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, function() {
+            video.play();
+        });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = url;
+        video.addEventListener('canplay', function() {
+            video.play();
+        });
+    }
+}
+
+
+
+
+
+    
 
 
 
