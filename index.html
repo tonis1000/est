@@ -139,7 +139,8 @@
     <h2 style="margin-bottom: 10px;">Kanäle</h2>
     <button id="channelListButton" style="margin-bottom: 5px;" onclick="reloadPage()">Kanalliste</button>
     <button id="channelListButton1" onclick="loadChannels1()">Kanalliste1</button>
-    <button id="channelListButton2">Kanalliste2</button>
+    <button id="channelListButton2" onclick="loadGamesList()">Kanalliste2</button>
+
     <ul id="channelList">
 
 <li data-url="https://88.99.254.101/ert1/mono.m3u8"><channel id="ert1"><icon src="https://i.imgur.com/nMHKG3A.png" /><display-name>Beispiel ert 1</display-name></channel></li>
@@ -371,25 +372,25 @@
 
 
 
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('channelListButton2').addEventListener('click', loadGamesListFromExternalSource);
+document.getElementById('channelListButton2').addEventListener('click', function() {
+    loadGamesListFromExternalSource();
 });
 
 function loadGamesListFromExternalSource() {
-    const corsProxy = 'https://api.allorigins.win/raw?url=';
+    const corsProxy = 'https://api.allorigins.win/raw?url='; // Ein alternativer Proxy
     const targetUrl = 'https://foothubhd.xyz/program.txt';
 
     fetch(corsProxy + encodeURIComponent(targetUrl))
         .then(response => response.text())
         .then(data => {
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = '';
+            channelList.innerHTML = ''; // Leere die bestehende Liste
 
             const games = data.split('\n');
             games.forEach(game => {
                 if (game.trim() !== '') {
                     const li = document.createElement('li');
+                    // Entferne das Trennzeichen 'η' und schneide den Rest der Zeile ab
                     const cleanGame = game.split(' η')[0].trim();
                     const parts = cleanGame.split(' http');
                     if (parts.length > 1) {
@@ -397,9 +398,9 @@ function loadGamesListFromExternalSource() {
                         const url = 'http' + parts[1].trim();
                         li.textContent = name;
                         li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => loadVideo(url));
+                        li.addEventListener('click', () => window.open(url, '_blank'));
                     } else {
-                        li.textContent = cleanGame;
+                        li.textContent = cleanGame; // Nur Text, falls keine URL vorhanden
                     }
                     channelList.appendChild(li);
                 }
@@ -409,30 +410,6 @@ function loadGamesListFromExternalSource() {
             console.error('Error loading the games:', error);
         });
 }
-
-function loadVideo(url) {
-    const video = document.getElementById('my-video');
-    if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(url);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, function() {
-            video.play();
-        });
-    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = url;
-        video.addEventListener('canplay', function() {
-            video.play();
-        });
-    }
-}
-</script>
-
-
-
-
-
-    
 
 
 
