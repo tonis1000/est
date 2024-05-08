@@ -244,27 +244,21 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var videoElement = document.getElementById('my-video');
-        var currentChannelNameElement = document.getElementById('currentChannelName');
-        var currentChannelLinkElement = document.getElementById('currentChannelLink');
-        var playButton = document.getElementById('playButton');
-        var channelList = document.getElementById('channelList');
-        var hls = new Hls();
+// Diese Logik wird jetzt direkt im Event-Listener behandelt:
+document.getElementById('channelList').addEventListener('click', function(event) {
+    if (event.target && event.target.nodeName == "LI") {
+        var url = event.target.getAttribute('data-url');
+        var channelName = event.target.textContent;
 
-        function playChannel(url, channelName) {
-            currentChannelNameElement.textContent = channelName;
-            currentChannelLinkElement.value = url;
+        document.getElementById('currentChannelName').textContent = channelName;
+        document.getElementById('currentChannelLink').value = url;
 
-            if (Hls.isSupported()) {
-                hls.loadSource(url);
-                hls.attachMedia(videoElement);
-            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-                videoElement.src = url;
-            }
+        player.src({ src: url, type: 'application/x-mpegURL' });
+        player.play();
+    }
+});
 
-            videoElement.play(); // Direkt abspielen
-        }
+
 
         function addClickListeners() {
             var channelListItems = document.querySelectorAll('#channelList li');
