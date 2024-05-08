@@ -374,10 +374,14 @@
 
 document.getElementById('channelListButton2').addEventListener('click', function() {
     loadGamesListFromExternalSource();
+
+// Setze das Intervall für regelmäßige Aktualisierungen
+    setInterval(loadGamesListFromExternalSource, 300000); // 300000 ms entsprechen 5 Minuten    
+    
 });
 
 function loadGamesListFromExternalSource() {
-    const corsProxy = 'https://api.allorigins.win/raw?url='; // Ein alternativer Proxy
+    const corsProxy = 'https://api.allorigins.win/raw?url=';
     const targetUrl = 'https://foothubhd.xyz/program.txt';
 
     fetch(corsProxy + encodeURIComponent(targetUrl))
@@ -386,21 +390,24 @@ function loadGamesListFromExternalSource() {
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Leere die bestehende Liste
 
-            const games = data.split('\n');
-            games.forEach(game => {
-                if (game.trim() !== '') {
+            const lines = data.split('\n').filter(line => {
+                // Entferne Zeilen, die die speziellen Hinweise enthalten
+                return !line.includes('ΚΑΝΤΕ ΑΝΤΙΓΡΑΦΗ') && !line.includes('ΑΜΑ ΘΕΛΕΤΕ ΝΑ ΒΑΛΕΤΕ ΤΟΥΣ ΑΓΩΝΕΣ ΣΕ ΔΙΚΟ ΣΑΣ SITE');
+            });
+
+            lines.forEach(line => {
+                if (line.trim() !== '') {
                     const li = document.createElement('li');
-                    // Entferne das Trennzeichen 'η' und schneide den Rest der Zeile ab
-                    const cleanGame = game.split(' η')[0].trim();
-                    const parts = cleanGame.split(' http');
+                    const parts = line.split(' η');
                     if (parts.length > 1) {
                         const name = parts[0].trim();
-                        const url = 'http' + parts[1].trim();
+                        const urls = parts.slice(1).join(' η').trim().split(' ').filter(u => u.startsWith('http'));
+                        const url = urls[0]; // Nehmen Sie das erste verfügbare URL
                         li.textContent = name;
                         li.setAttribute('data-url', url);
                         li.addEventListener('click', () => window.open(url, '_blank'));
                     } else {
-                        li.textContent = cleanGame; // Nur Text, falls keine URL vorhanden
+                        li.textContent = line; // Nur Text, falls keine URL vorhanden
                     }
                     channelList.appendChild(li);
                 }
@@ -410,6 +417,7 @@ function loadGamesListFromExternalSource() {
             console.error('Error loading the games:', error);
         });
 }
+
 
 
 
