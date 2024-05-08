@@ -217,26 +217,32 @@
     function reloadPage() {
         location.reload();
     }
+document.addEventListener('DOMContentLoaded', function() {
+    var player = videojs('my-video');
 
-    // Definition der playChannel-Funktion
-    window.playChannel = function(url, channelName) {
-        var videoElement = document.getElementById('my-video');
-        var currentChannelNameElement = document.getElementById('currentChannelName');
-        var currentChannelLinkElement = document.getElementById('currentChannelLink');
-        var hls = new Hls();
-
-        currentChannelNameElement.textContent = channelName;
-        currentChannelLinkElement.value = url;
-
-        if (Hls.isSupported()) {
-            hls.loadSource(url);
-            hls.attachMedia(videoElement);
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            videoElement.src = url;
+    document.getElementById('channelList').addEventListener('click', function(event) {
+        if (event.target && event.target.nodeName == "LI") {
+            var url = event.target.getAttribute('data-url');
+            var channelName = event.target.textContent;
+            
+            document.getElementById('currentChannelName').textContent = channelName;
+            document.getElementById('currentChannelLink').value = url;
+            
+            player.src({
+                src: url,
+                type: 'application/x-mpegURL'
+            });
+            player.play();
         }
+    });
 
-        videoElement.play(); // Direkt abspielen
-    };
+    document.getElementById('playButton').addEventListener('click', function() {
+        var url = document.getElementById('currentChannelLink').value;
+        player.src({ src: url, type: 'application/x-mpegURL' });
+        player.play();
+    });
+});
+
 
     document.addEventListener('DOMContentLoaded', function () {
         var videoElement = document.getElementById('my-video');
