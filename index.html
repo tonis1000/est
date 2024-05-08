@@ -6,7 +6,7 @@
     <title>WebTV mit Sidebar</title>
     
     <!-- Einbinden von Plyr CSS und hls.js-Bibliothek -->
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css">
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.6.12/plyr.css">
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <script src="https://cdn.plyr.io/3.6.8/plyr.polyfilled.js"></script>
 
@@ -231,116 +231,90 @@
     
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const videoElement = document.getElementById('my-video');
-    const currentChannelNameElement = document.getElementById('currentChannelName');
-    const currentChannelLinkElement = document.getElementById('currentChannelLink');
-    const playButton = document.getElementById('playButton');
-    const channelList = document.getElementById('channelList');
-    const hls = new Hls();
 
-    // Funktion zum Abspielen eines Kanals
-    function playChannel(url, channelName) {
-        currentChannelNameElement.textContent = channelName;
-        currentChannelLinkElement.value = url;
 
-        if (Hls.isSupported()) {
-            hls.loadSource(url);
-            hls.attachMedia(videoElement);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                videoElement.play();
-            });
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-            videoElement.src = url;
-            videoElement.play();
-        }
-    }
 
-    // Event-Listeners für Kanal-Listenelemente hinzufügen
-    function addClickListeners() {
-        const channelListItems = document.querySelectorAll('#channelList li');
-        channelListItems.forEach(function(item) {
-            item.addEventListener('click', function() {
-                const channelUrl = this.getAttribute('data-url');
-                const channelName = this.textContent;
-                playChannel(channelUrl, channelName);
-            });
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const videoElement = document.getElementById('my-video');
+        const hls = new Hls();
+        const player = new Plyr(videoElement, {
+            controls: ['play-large', 'play', 'progress', 'volume', 'fullscreen']
         });
-    }
 
-    // Überprüfen des Online-Status der Kanäle
-    function checkChannelOnline(url, element) {
-        fetch(url, { method: 'HEAD' })
-            .then(response => {
-                if (response.ok) {
-                    element.classList.add('online');
-                } else {
-                    element.classList.remove('online');
+        function reloadPage() {
+            location.reload();
+        }
+
+        function playChannel(url, channelName) {
+            document.getElementById('currentChannelName').textContent = channelName;
+            document.getElementById('currentChannelLink').value = url;
+
+            if (Hls.isSupported()) {
+                if (!hls.media) {
+                    hls.attachMedia(videoElement);
                 }
-            })
-            .catch(() => element.classList.remove('online'));
-    }
-
-    // Überprüfen des Online-Status aller Kanäle
-    function checkOnlineStatus() {
-        document.querySelectorAll('#channelList li').forEach(item => {
-            const channelUrl = item.getAttribute('data-url');
-            checkChannelOnline(channelUrl, item);
-        });
-    }
-
-    // Event Listener für den Abspielknopf
-    playButton.addEventListener('click', function() {
-        const enteredUrl = currentChannelLinkElement.value.trim();
-        if (enteredUrl) {
-            playChannel(enteredUrl, currentChannelNameElement.textContent);
-        }
-    });
-
-    // Event Listener für Eingabe-Events
-    currentChannelLinkElement.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-            event.preventDefault();
-            const enteredUrl = currentChannelLinkElement.value.trim();
-            if (enteredUrl) {
-                playChannel(enteredUrl, 'Custom Channel');
+                hls.on(Hls.Events.MEDIA_ATTACHED, function() {
+                    hls.loadSource(url);
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        videoElement.play();
+                    });
+                });
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = url;
+                videoElement.play();
             }
         }
-    });
 
-    // Lädt Kanäle beim Klicken des Buttons
-    document.getElementById('channelListButton').addEventListener('click', loadChannels);
-    document.getElementById('channelListButton1').addEventListener('click', loadChannels1);
-    document.getElementById('channelListButton2').addEventListener('click', function() {
-        loadGamesListFromExternalSource();
-        setInterval(loadGamesListFromExternalSource, 300000); // Alle 5 Minuten aktualisieren
-    });
-
-    addClickListeners();
-    setInterval(checkOnlineStatus, 30000); // Online-Status alle 30 Sekunden überprüfen
-
-    function loadChannels() {
-        // Funktion zum Laden von Kanälen
-    }
-
-    function loadChannels1() {
-        // Spezielle Funktion zum Laden alternativer Kanallisten
-    }
-
-    function loadGamesListFromExternalSource() {
-        const corsProxy = 'https://api.allorigins.win/raw?url=';
-        const targetUrl = 'https://foothubhd.xyz/program.txt';
-
-        fetch(corsProxy + encodeURIComponent(targetUrl))
-            .then(response => response.text())
-            .then(data => {
-                // Verarbeitung der Daten, um die Liste zu aktualisieren
+        function addClickListeners() {
+            document.querySelectorAll('#channelList li').forEach(item => {
+                item.addEventListener('click', function() {
+                    playChannel(this.getAttribute('data-url'), this.textContent);
+                });
             });
-    }
-});
+        }
+
+        function checkChannelOnline(url, element) {
+            fetch(url, { method: 'HEAD' })
+                .then(response => {
+                    if (response.ok) {
+                        element.classList.add('online');
+                    } else {
+                        element.classList.remove('online');
+                    }
+                })
+                .catch(() => element.classList.remove('online'));
+        }
+
+        function checkOnlineStatus() {
+            document.querySelectorAll('#channelList li').forEach(item => {
+                checkChannelOnline(item.getAttribute('data-url'), item);
+            });
+        }
+
+        document.getElementById('playButton').addEventListener('click', function() {
+            const url = document.getElementById('currentChannelLink').value.trim();
+            if (url) playChannel(url, document.getElementById('currentChannelName').textContent);
+        });
+
+        document.getElementById('channelListButton').addEventListener('click', reloadPage);
+        document.getElementById('channelListButton1').addEventListener('click', function() { /* loadChannels1(); Implementierung benötigt */ });
+        document.getElementById('channelListButton2').addEventListener('click', function() {
+            /* loadGamesListFromExternalSource(); Implementierung benötigt */
+        });
+
+        addClickListeners();
+        setInterval(checkOnlineStatus, 30000); // Online-Status alle 30 Sekunden überprüfen
+    });
+
+    // Weitere Funktionen zur Kanalladung und zur Überprüfung des Online-Status von Links können hier hinzugefügt werden
 </script>
 
+
+
+
+    
 
     
 </body>
