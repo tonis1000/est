@@ -5,16 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebTV mit Sidebar</title>
     
+    <!-- Video.js CSS -->
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
 
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
-
-    
+    <!-- Video.js JavaScript -->
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <script src="proxy-script.js"></script>
 
-    <!-- Content-Security-Policy Header einfügen -->
-
-    
     <style>
         body {
             display: flex;
@@ -29,15 +26,14 @@
             color: white;
             padding: 10px 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0; /* Sidebar wird nicht verkleinert */
+            flex-shrink: 0;
             overflow-y: auto;
-           #max-height: calc(100vh - 50px);
         }
 
         #channelList {
             list-style: none;
-            padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
-            margin: 1;
+            padding: 0;
+            margin: 0;
         }
 
         #channelList li {
@@ -55,8 +51,6 @@
             font-size: 28px;
             display: flex;
             align-items: center;
-            position: fixed;
-            top: 0;
             width: 100%;
         }
 
@@ -84,57 +78,54 @@
         }
 
         #mainContent {
-            flex-grow: 0;
+            flex-grow: 1;
             padding: 10px;
         }
 
         #additionalContent {
             width: 400px;
             padding: 10px;
-            box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
-            flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
+            box-sizing: border-box;
+            flex-shrink: 0;
         }
 
         #additionalContent iframe {
-            width: 400px;
+            width: 100%;
             height: 720px;
         }
 
-        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
         .online {
             color: #2EFE64;
         }
 
-        /* Stil für die Kanäle und Programme */
         #epg-info {
             font-family: Arial, sans-serif;
             margin-top: 20px;
         }
+        
         .channel {
             border-bottom: 1px solid #ccc;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
+        
         .channel img {
             max-width: 100px;
             margin-right: 10px;
         }
+        
         .channel h2 {
             margin-bottom: 5px;
         }
+        
         .program {
             margin-left: 20px;
         }
+        
         .program li {
             margin-bottom: 5px;
         }
-                /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
-        .online {
-            color: #2EFE64;
-        }
-        
     </style>
-
 </head>
 <body>
 
@@ -201,20 +192,12 @@
         <button id="playButton">▶</button>
     </div>
 
-    <!-- Video-Player mit Untertitel- und Audiosprachensteuerung -->
-    <video id="my-video" controls preload="auto" width="1000" height="690"></video>
+    <!-- Video.js Player -->
+    <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" width="1000" height="690" data-setup='{}'>
+        <!-- Sources will be dynamically loaded -->
+    </video>
     
-    <!-- Steuerelemente für Untertitel und Audiosprachen -->
-    <div id="controls">
-        <label for="subtitle-select">Untertitel:</label>
-        <select id="subtitle-select">
-            <option value="none">Keine</option>
-            <option value="subtitles_en">Englisch</option>
-            <option value="subtitles_de">Deutsch</option>
-            <option value="subtitles_gr">Griechisch</option>
-        </select>
-    </div>
-    
+
     <h1>EPG Information</h1>
 
     <!-- Hier werden die EPG-Informationen angezeigt -->
