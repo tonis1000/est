@@ -374,9 +374,7 @@
 
 document.getElementById('channelListButton2').addEventListener('click', function() {
     loadGamesListFromExternalSource();
-
-    // Setze das Intervall für regelmäßige Aktualisierungen
-    setInterval(loadGamesListFromExternalSource, 300000); // 300000 ms entsprechen 5 Minuten
+    setInterval(loadGamesListFromExternalSource, 300000); // Alle 5 Minuten aktualisieren
 });
 
 function loadGamesListFromExternalSource() {
@@ -387,7 +385,7 @@ function loadGamesListFromExternalSource() {
         .then(response => response.text())
         .then(data => {
             const channelList = document.getElementById('channelList');
-            channelList.innerHTML = ''; // Leere die bestehende Liste
+            channelList.innerHTML = ''; // Bestehende Liste leeren
 
             const lines = data.split('\n');
             let currentDate = '';
@@ -411,8 +409,12 @@ function loadGamesListFromExternalSource() {
                         link.textContent = `Link${index + 1}`;
                         link.href = url;
                         link.target = '_blank';
+                        link.style.color = 'yellow'; // Standardfarbe Gelb
                         link.style.marginRight = '10px';
                         gameInfo.appendChild(link);
+
+                        // Überprüfen, ob der Link online ist
+                        checkLinkStatus(link);
                     });
 
                     channelList.appendChild(gameInfo);
@@ -423,6 +425,22 @@ function loadGamesListFromExternalSource() {
             console.error('Error loading the games:', error);
         });
 }
+
+// Funktion zum Überprüfen des Online-Status von Links
+function checkLinkStatus(linkElement) {
+    fetch(linkElement.href, { method: 'HEAD' })
+        .then(response => {
+            if (response.ok) {
+                linkElement.style.color = 'lightgreen'; // Link ist online
+            } else {
+                linkElement.style.color = 'red'; // Link ist offline, markieren in Rot
+            }
+        })
+        .catch(() => {
+            linkElement.style.color = 'red'; // Bei Fehler, Link als offline markieren
+        });
+}
+
 
 
 
