@@ -428,17 +428,23 @@ function loadGamesListFromExternalSource() {
 
 // Funktion zum Überprüfen des Online-Status von Links
 function checkLinkStatus(linkElement) {
-    fetch(linkElement.href, { method: 'HEAD' })
-        .then(response => {
-            if (response.ok) {
-                linkElement.style.color = 'lightgreen'; // Link ist online
-            } else {
-                linkElement.style.color = 'red'; // Link ist offline, markieren in Rot
-            }
-        })
-        .catch(() => {
-            linkElement.style.color = 'red'; // Bei Fehler, Link als offline markieren
-        });
+    const proxyUrl = 'https://api.allorigins.win/raw?url=';
+    const urlToFetch = proxyUrl + encodeURIComponent(linkElement.href);
+
+    fetch(urlToFetch, { 
+        method: 'GET',
+        mode: 'cors'  // Sie können hier auch 'no-cors' versuchen, wenn 'cors' nicht funktioniert
+    })
+    .then(response => {
+        if (response.ok) {
+            linkElement.style.color = 'lightgreen'; // Link ist online
+        } else {
+            linkElement.style.color = 'red'; // Link ist offline, markieren in Rot
+        }
+    })
+    .catch(() => {
+        linkElement.style.color = 'red'; // Bei Fehler, Link als offline markieren
+    });
 }
 
 
