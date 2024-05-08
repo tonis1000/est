@@ -217,59 +217,59 @@
     function reloadPage() {
         location.reload();
     }
+
+<script>
 document.addEventListener('DOMContentLoaded', function() {
     var player = videojs('my-video');
+
+    // Einfacher Event-Listener für das gesamte Kanallisten-Element
     document.getElementById('channelList').addEventListener('click', function(event) {
-        if (event.target && event.target.nodeName == "LI") {
-            var url = event.target.getAttribute('data-url');
-            var channelName = event.target.textContent;
+        var target = event.target.closest('li[data-url]'); // Stellt sicher, dass das LI-Element geklickt wurde
+        if (target) {
+            var url = target.getAttribute('data-url');
+            var channelName = target.textContent.trim();
             document.getElementById('currentChannelName').textContent = channelName;
             document.getElementById('currentChannelLink').value = url;
             player.src({ src: url, type: 'application/x-mpegURL' });
             player.play();
         }
     });
-    
+
     document.getElementById('playButton').addEventListener('click', function() {
         var url = document.getElementById('currentChannelLink').value;
         player.src({ src: url, type: 'application/x-mpegURL' });
         player.play();
     });
+});
+
+// Eine Funktion, um den Online-Status eines Kanals zu überprüfen
+function checkChannelOnline(url, callback) {
+    fetch(url, { method: 'HEAD' })
+        .then(response => {
+            callback(response.ok);
+        })
+        .catch(() => {
+            callback(false);
+        });
+}
+
+// Diese Funktion könnte aufgerufen werden, wenn ein Kanal geladen wird oder periodisch zur Überprüfung
+function updateOnlineStatus() {
+    document.querySelectorAll('#channelList li').forEach(item => {
+        var url = item.getAttribute('data-url');
+        checkChannelOnline(url, (isOnline) => {
+            item.classList.toggle('online', isOnline);
+        });
+    });
+}
+
+// Periodische Überprüfung alle 30 Sekunden
+setInterval(updateOnlineStatus, 30000);
+</script>
 
 
-        function addClickListeners() {
-            var channelListItems = document.querySelectorAll('#channelList li');
-            channelListItems.forEach(function (item) {
-                item.addEventListener('click', function () {
-                    var channelUrl = this.getAttribute('data-url');
-                    var channelName = this.textContent;
-                    playChannel(channelUrl, channelName); // Hier wird die playChannel-Funktion mit den entsprechenden Parametern aufgerufen
-                });
-            });
-        }
 
-        function checkChannelOnline(url, element) {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        element.classList.add('online');
-                    } else {
-                        element.classList.remove('online');
-                    }
-                }
-            };
-            xhr.open('HEAD', url, true);
-            xhr.send();
-        }
-
-        function checkOnlineStatus() {
-            var channelListItems = document.querySelectorAll('#channelList li');
-            channelListItems.forEach(function (item) {
-                var channelUrl = item.getAttribute('data-url');
-                checkChannelOnline(channelUrl, item);
-            });
-        }
+    
 
         playButton.addEventListener('click', function () {
             var enteredUrl = currentChannelLinkElement.value.trim();
