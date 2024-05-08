@@ -219,45 +219,22 @@
     }
 document.addEventListener('DOMContentLoaded', function() {
     var player = videojs('my-video');
-
     document.getElementById('channelList').addEventListener('click', function(event) {
         if (event.target && event.target.nodeName == "LI") {
             var url = event.target.getAttribute('data-url');
             var channelName = event.target.textContent;
-            
             document.getElementById('currentChannelName').textContent = channelName;
             document.getElementById('currentChannelLink').value = url;
-            
-            player.src({
-                src: url,
-                type: 'application/x-mpegURL'
-            });
+            player.src({ src: url, type: 'application/x-mpegURL' });
             player.play();
         }
     });
-
+    
     document.getElementById('playButton').addEventListener('click', function() {
         var url = document.getElementById('currentChannelLink').value;
         player.src({ src: url, type: 'application/x-mpegURL' });
         player.play();
     });
-});
-
-
-// Diese Logik wird jetzt direkt im Event-Listener behandelt:
-document.getElementById('channelList').addEventListener('click', function(event) {
-    if (event.target && event.target.nodeName == "LI") {
-        var url = event.target.getAttribute('data-url');
-        var channelName = event.target.textContent;
-
-        document.getElementById('currentChannelName').textContent = channelName;
-        document.getElementById('currentChannelLink').value = url;
-
-        player.src({ src: url, type: 'application/x-mpegURL' });
-        player.play();
-    }
-});
-
 
 
         function addClickListeners() {
