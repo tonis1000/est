@@ -218,13 +218,11 @@
         location.reload();
     }
 
-<script>
 document.addEventListener('DOMContentLoaded', function() {
     var player = videojs('my-video');
 
-    // Einfacher Event-Listener für das gesamte Kanallisten-Element
     document.getElementById('channelList').addEventListener('click', function(event) {
-        var target = event.target.closest('li[data-url]'); // Stellt sicher, dass das LI-Element geklickt wurde
+        var target = event.target.closest('li[data-url]');
         if (target) {
             var url = target.getAttribute('data-url');
             var channelName = target.textContent.trim();
@@ -240,32 +238,22 @@ document.addEventListener('DOMContentLoaded', function() {
         player.src({ src: url, type: 'application/x-mpegURL' });
         player.play();
     });
+
+    function updateOnlineStatus() {
+        document.querySelectorAll('#channelList li').forEach(item => {
+            var url = item.getAttribute('data-url');
+            fetch(url, { method: 'HEAD' })
+            .then(response => {
+                item.classList.toggle('online', response.ok);
+            })
+            .catch(() => {
+                item.classList.remove('online');
+            });
+        });
+    }
+
+    setInterval(updateOnlineStatus, 30000); // Aktualisierung des Online-Status alle 30 Sekunden
 });
-
-// Eine Funktion, um den Online-Status eines Kanals zu überprüfen
-function checkChannelOnline(url, callback) {
-    fetch(url, { method: 'HEAD' })
-        .then(response => {
-            callback(response.ok);
-        })
-        .catch(() => {
-            callback(false);
-        });
-}
-
-// Diese Funktion könnte aufgerufen werden, wenn ein Kanal geladen wird oder periodisch zur Überprüfung
-function updateOnlineStatus() {
-    document.querySelectorAll('#channelList li').forEach(item => {
-        var url = item.getAttribute('data-url');
-        checkChannelOnline(url, (isOnline) => {
-            item.classList.toggle('online', isOnline);
-        });
-    });
-}
-
-// Periodische Überprüfung alle 30 Sekunden
-setInterval(updateOnlineStatus, 30000);
-</script>
 
 
 
