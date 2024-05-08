@@ -374,9 +374,7 @@
 
 document.getElementById('channelListButton2').addEventListener('click', function() {
     loadGamesListFromExternalSource();
-
-    // Setze das Intervall für regelmäßige Aktualisierungen
-    setInterval(loadGamesListFromExternalSource, 300000); // 300000 ms entsprechen 5 Minuten
+    setInterval(loadGamesListFromExternalSource, 300000); // Aktualisieren alle 5 Minuten
 });
 
 function loadGamesListFromExternalSource() {
@@ -389,25 +387,34 @@ function loadGamesListFromExternalSource() {
             const channelList = document.getElementById('channelList');
             channelList.innerHTML = ''; // Leere die bestehende Liste
 
-            const lines = data.split('\n').filter(line => {
-                // Entferne Zeilen, die die speziellen Hinweise enthalten
-                return !line.includes('ΚΑΝΤΕ ΑΝΤΙΓΡΑΦΗ') && !line.includes('ΑΜΑ ΘΕΛΕΤΕ ΝΑ ΒΑΛΕΤΕ ΤΟΥΣ ΑΓΩΝΕΣ ΣΕ ΔΙΚΟ ΣΑΣ SITE');
-            });
+            const lines = data.split('\n');
+            let currentHeader = '';
 
             lines.forEach(line => {
-                if (line.trim() !== '') {
-                    const li = document.createElement('li');
-                    const nameUrlPair = line.split('https://');
-                    if (nameUrlPair.length > 1) {
-                        const name = nameUrlPair[0].trim();
-                        const url = 'https://' + nameUrlPair[1].trim();
-                        li.textContent = name;
-                        li.setAttribute('data-url', url);
-                        li.addEventListener('click', () => window.open(url, '_blank'));  // Öffnet den Link in einem neuen Tab
-                    } else {
-                        li.textContent = line; // Nur Text, falls keine URL vorhanden
+                line = line.trim();
+                if (line.startsWith('ΠΡΟΓΡΑΜΜΑ')) {
+                    // Neuer Tag als Überschrift
+                    currentHeader = document.createElement('div');
+                    currentHeader.textContent = line;
+                    currentHeader.style.color = 'lightblue';
+                    currentHeader.style.fontWeight = 'bold';
+                    channelList.appendChild(currentHeader);
+                } else if (line.includes('http')) {
+                    const eventDetails = line.split(' https')[0].trim();
+                    const linkText = document.createElement('div');
+                    linkText.textContent = eventDetails;
+                    channelList.appendChild(linkText);
+
+                    const urls = line.match(/https[^ ]+/g);
+                    if (urls) {
+                        urls.forEach((url, index) => {
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.textContent = 'Link ' + (index + 1);
+                            link.style.display = 'none'; // URLs sind versteckt
+                            channelList.appendChild(link);
+                        });
                     }
-                    channelList.appendChild(li);
                 }
             });
         })
