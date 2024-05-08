@@ -5,13 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebTV mit Sidebar</title>
     
-    <!-- Video.js CSS -->
-    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
 
-    <!-- Video.js JavaScript -->
-    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+
+    
     <script src="proxy-script.js"></script>
 
+    <!-- Content-Security-Policy Header einfügen -->
+
+    
     <style>
         body {
             display: flex;
@@ -26,14 +29,15 @@
             color: white;
             padding: 10px 20px;
             box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-            flex-shrink: 0;
+            flex-shrink: 0; /* Sidebar wird nicht verkleinert */
             overflow-y: auto;
+           #max-height: calc(100vh - 50px);
         }
 
         #channelList {
             list-style: none;
-            padding: 0;
-            margin: 0;
+            padding: 0 10px; /* Hier habe ich die linke Innenpolsterung auf 10px reduziert */
+            margin: 1;
         }
 
         #channelList li {
@@ -51,6 +55,8 @@
             font-size: 28px;
             display: flex;
             align-items: center;
+            position: fixed;
+            top: 0;
             width: 100%;
         }
 
@@ -78,54 +84,57 @@
         }
 
         #mainContent {
-            flex-grow: 1;
+            flex-grow: 0;
             padding: 10px;
         }
 
         #additionalContent {
             width: 400px;
             padding: 10px;
-            box-sizing: border-box;
-            flex-shrink: 0;
+            box-sizing: border-box; /* Berücksichtigen Sie Padding und Border beim Berechnen der Gesamtbreite */
+            flex-shrink: 0; /* Zusätzlicher Inhalt wird nicht verkleinert */
         }
 
         #additionalContent iframe {
-            width: 100%;
+            width: 400px;
             height: 720px;
         }
 
+        /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
         .online {
             color: #2EFE64;
         }
 
+        /* Stil für die Kanäle und Programme */
         #epg-info {
             font-family: Arial, sans-serif;
             margin-top: 20px;
         }
-        
         .channel {
             border-bottom: 1px solid #ccc;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
-        
         .channel img {
             max-width: 100px;
             margin-right: 10px;
         }
-        
         .channel h2 {
             margin-bottom: 5px;
         }
-        
         .program {
             margin-left: 20px;
         }
-        
         .program li {
             margin-bottom: 5px;
         }
+                /* Die folgende Regel könnte überflüssig sein, wenn sie nicht im HTML verwendet wird */
+        .online {
+            color: #2EFE64;
+        }
+        
     </style>
+
 </head>
 <body>
 
@@ -192,12 +201,20 @@
         <button id="playButton">▶</button>
     </div>
 
-    <!-- Video.js Player -->
-    <video id="my-video" class="video-js vjs-default-skin" controls preload="auto" width="1000" height="690" data-setup='{}'>
-        <!-- Sources will be dynamically loaded -->
-    </video>
+    <!-- Video-Player mit Untertitel- und Audiosprachensteuerung -->
+    <video id="my-video" controls preload="auto" width="1000" height="690"></video>
     
-
+    <!-- Steuerelemente für Untertitel und Audiosprachen -->
+    <div id="controls">
+        <label for="subtitle-select">Untertitel:</label>
+        <select id="subtitle-select">
+            <option value="none">Keine</option>
+            <option value="subtitles_en">Englisch</option>
+            <option value="subtitles_de">Deutsch</option>
+            <option value="subtitles_gr">Griechisch</option>
+        </select>
+    </div>
+    
     <h1>EPG Information</h1>
 
     <!-- Hier werden die EPG-Informationen angezeigt -->
@@ -218,46 +235,81 @@
         location.reload();
     }
 
-document.addEventListener('DOMContentLoaded', function() {
-    var player = videojs('my-video');
+    // Definition der playChannel-Funktion
+    window.playChannel = function(url, channelName) {
+        var videoElement = document.getElementById('my-video');
+        var currentChannelNameElement = document.getElementById('currentChannelName');
+        var currentChannelLinkElement = document.getElementById('currentChannelLink');
+        var hls = new Hls();
 
-    document.getElementById('channelList').addEventListener('click', function(event) {
-        var target = event.target.closest('li[data-url]');
-        if (target) {
-            var url = target.getAttribute('data-url');
-            var channelName = target.textContent.trim();
-            document.getElementById('currentChannelName').textContent = channelName;
-            document.getElementById('currentChannelLink').value = url;
-            player.src({ src: url, type: 'application/x-mpegURL' });
-            player.play();
+        currentChannelNameElement.textContent = channelName;
+        currentChannelLinkElement.value = url;
+
+        if (Hls.isSupported()) {
+            hls.loadSource(url);
+            hls.attachMedia(videoElement);
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            videoElement.src = url;
         }
-    });
 
-    document.getElementById('playButton').addEventListener('click', function() {
-        var url = document.getElementById('currentChannelLink').value;
-        player.src({ src: url, type: 'application/x-mpegURL' });
-        player.play();
-    });
+        videoElement.play(); // Direkt abspielen
+    };
 
-    function updateOnlineStatus() {
-        document.querySelectorAll('#channelList li').forEach(item => {
-            var url = item.getAttribute('data-url');
-            fetch(url, { method: 'HEAD' })
-            .then(response => {
-                item.classList.toggle('online', response.ok);
-            })
-            .catch(() => {
-                item.classList.remove('online');
+    document.addEventListener('DOMContentLoaded', function () {
+        var videoElement = document.getElementById('my-video');
+        var currentChannelNameElement = document.getElementById('currentChannelName');
+        var currentChannelLinkElement = document.getElementById('currentChannelLink');
+        var playButton = document.getElementById('playButton');
+        var channelList = document.getElementById('channelList');
+        var hls = new Hls();
+
+        function playChannel(url, channelName) {
+            currentChannelNameElement.textContent = channelName;
+            currentChannelLinkElement.value = url;
+
+            if (Hls.isSupported()) {
+                hls.loadSource(url);
+                hls.attachMedia(videoElement);
+            } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+                videoElement.src = url;
+            }
+
+            videoElement.play(); // Direkt abspielen
+        }
+
+        function addClickListeners() {
+            var channelListItems = document.querySelectorAll('#channelList li');
+            channelListItems.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    var channelUrl = this.getAttribute('data-url');
+                    var channelName = this.textContent;
+                    playChannel(channelUrl, channelName); // Hier wird die playChannel-Funktion mit den entsprechenden Parametern aufgerufen
+                });
             });
-        });
-    }
+        }
 
-    setInterval(updateOnlineStatus, 30000); // Aktualisierung des Online-Status alle 30 Sekunden
-});
+        function checkChannelOnline(url, element) {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        element.classList.add('online');
+                    } else {
+                        element.classList.remove('online');
+                    }
+                }
+            };
+            xhr.open('HEAD', url, true);
+            xhr.send();
+        }
 
-
-
-    
+        function checkOnlineStatus() {
+            var channelListItems = document.querySelectorAll('#channelList li');
+            channelListItems.forEach(function (item) {
+                var channelUrl = item.getAttribute('data-url');
+                checkChannelOnline(channelUrl, item);
+            });
+        }
 
         playButton.addEventListener('click', function () {
             var enteredUrl = currentChannelLinkElement.value.trim();
